@@ -2,6 +2,7 @@
 //! symbol/sdk/rust/scripts/run_catbuffer_generator.sh.
 
 pub use crate::symbol::models_header::*;
+use std::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not};
 
 pub trait TraitSignature {
     fn get_signature(&self) -> &Signature;
@@ -877,6 +878,7 @@ impl UnresolvedMosaic {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
+#[derive(Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum LinkAction {
@@ -935,6 +937,7 @@ impl LinkAction {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
+#[derive(Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 #[cfg(not(feature = "private_network"))]
@@ -1064,6 +1067,7 @@ impl NetworkType {
 //*size: 2
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
+#[derive(Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u16)]
 pub enum TransactionType {
@@ -2046,8 +2050,8 @@ impl Transaction {
                 (parent_id, payload) = NamespaceId::deserialize(payload)?;
                 let id;
                 (id, payload) = NamespaceId::deserialize(payload)?;
-                let registration_type_;
-                (registration_type_, payload) = NamespaceRegistrationType::deserialize(payload)?;
+                let registration_type;
+                (registration_type, payload) = NamespaceRegistrationType::deserialize(payload)?;
                 let name_size = u8::from_le_bytes(payload[..1].try_into()?);
                 payload = &payload[1..];
                 let mut name = Vec::new();
@@ -2067,7 +2071,7 @@ impl Transaction {
                     duration,
                     parent_id,
                     id,
-                    registration_type_,
+                    registration_type,
                     name,
                 };
                 Ok((Self::NamespaceRegistrationTransactionV1(self_), payload))
@@ -2243,11 +2247,10 @@ impl Transaction {
                 payload = &payload[8..];
                 let new_restriction_value = u64::from_le_bytes(payload[..8].try_into()?);
                 payload = &payload[8..];
-                let previous_restriction_type_;
-                (previous_restriction_type_, payload) =
-                    MosaicRestrictionType::deserialize(payload)?;
-                let new_restriction_type_;
-                (new_restriction_type_, payload) = MosaicRestrictionType::deserialize(payload)?;
+                let previous_restriction_type;
+                (previous_restriction_type, payload) = MosaicRestrictionType::deserialize(payload)?;
+                let new_restriction_type;
+                (new_restriction_type, payload) = MosaicRestrictionType::deserialize(payload)?;
                 let self_ = MosaicGlobalRestrictionTransactionV1 {
                     signature,
                     signer_public_key,
@@ -2259,8 +2262,8 @@ impl Transaction {
                     restriction_key,
                     previous_restriction_value,
                     new_restriction_value,
-                    previous_restriction_type_,
-                    new_restriction_type_,
+                    previous_restriction_type,
+                    new_restriction_type,
                 };
                 Ok((Self::MosaicGlobalRestrictionTransactionV1(self_), payload))
             }
@@ -2316,8 +2319,8 @@ impl Transaction {
                 };
                 Ok((Self::TransferTransactionV1(self_), payload))
             }
-            (other_type_, other_version) => Err(SymbolError::MismatchError {
-                pattern: vec![other_type_ as u32, other_version as u32],
+            (other_type, other_version) => Err(SymbolError::MismatchError {
+                pattern: vec![other_type as u32, other_version as u32],
                 place: "Transaction".to_string(),
             }),
         }
@@ -3142,8 +3145,8 @@ impl EmbeddedTransaction {
                 (parent_id, payload) = NamespaceId::deserialize(payload)?;
                 let id;
                 (id, payload) = NamespaceId::deserialize(payload)?;
-                let registration_type_;
-                (registration_type_, payload) = NamespaceRegistrationType::deserialize(payload)?;
+                let registration_type;
+                (registration_type, payload) = NamespaceRegistrationType::deserialize(payload)?;
                 let name_size = u8::from_le_bytes(payload[..1].try_into()?);
                 payload = &payload[1..];
                 let mut name = Vec::new();
@@ -3160,7 +3163,7 @@ impl EmbeddedTransaction {
                     duration,
                     parent_id,
                     id,
-                    registration_type_,
+                    registration_type,
                     name,
                 };
                 Ok((
@@ -3336,11 +3339,10 @@ impl EmbeddedTransaction {
                 payload = &payload[8..];
                 let new_restriction_value = u64::from_le_bytes(payload[..8].try_into()?);
                 payload = &payload[8..];
-                let previous_restriction_type_;
-                (previous_restriction_type_, payload) =
-                    MosaicRestrictionType::deserialize(payload)?;
-                let new_restriction_type_;
-                (new_restriction_type_, payload) = MosaicRestrictionType::deserialize(payload)?;
+                let previous_restriction_type;
+                (previous_restriction_type, payload) = MosaicRestrictionType::deserialize(payload)?;
+                let new_restriction_type;
+                (new_restriction_type, payload) = MosaicRestrictionType::deserialize(payload)?;
                 let self_ = EmbeddedMosaicGlobalRestrictionTransactionV1 {
                     signer_public_key,
                     network,
@@ -3349,8 +3351,8 @@ impl EmbeddedTransaction {
                     restriction_key,
                     previous_restriction_value,
                     new_restriction_value,
-                    previous_restriction_type_,
-                    new_restriction_type_,
+                    previous_restriction_type,
+                    new_restriction_type,
                 };
                 Ok((
                     Self::EmbeddedMosaicGlobalRestrictionTransactionV1(self_),
@@ -3406,8 +3408,8 @@ impl EmbeddedTransaction {
                 };
                 Ok((Self::EmbeddedTransferTransactionV1(self_), payload))
             }
-            (other_type_, other_version) => Err(SymbolError::MismatchError {
-                pattern: vec![other_type_ as u32, other_version as u32],
+            (other_type, other_version) => Err(SymbolError::MismatchError {
+                pattern: vec![other_type as u32, other_version as u32],
                 place: "EmbeddedTransaction".to_string(),
             }),
         }
@@ -3689,6 +3691,7 @@ impl ProofScalar {
 //*size: 2
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
+#[derive(Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u16)]
 pub enum BlockType {
@@ -4307,8 +4310,8 @@ impl Block {
                 };
                 Ok((Self::ImportanceBlockV1(self_), payload))
             }
-            (other_type_,) => Err(SymbolError::MismatchError {
-                pattern: vec![other_type_ as u32],
+            (other_type,) => Err(SymbolError::MismatchError {
+                pattern: vec![other_type as u32],
                 place: "Block".to_string(),
             }),
         }
@@ -4898,8 +4901,8 @@ impl NemesisBlockV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = BlockType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = BlockType::deserialize(payload)?;
         let height;
         (height, payload) = Height::deserialize(payload)?;
         let timestamp;
@@ -5533,8 +5536,8 @@ impl NormalBlockV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = BlockType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = BlockType::deserialize(payload)?;
         let height;
         (height, payload) = Height::deserialize(payload)?;
         let timestamp;
@@ -6217,8 +6220,8 @@ impl ImportanceBlockV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = BlockType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = BlockType::deserialize(payload)?;
         let height;
         (height, payload) = Height::deserialize(payload)?;
         let timestamp;
@@ -6602,6 +6605,7 @@ impl FinalizedBlockHeader {
 //*size: 2
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
+#[derive(Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u16)]
 pub enum ReceiptType {
@@ -6956,8 +6960,8 @@ impl Receipt {
                 };
                 Ok((Self::NamespaceRentalFeeReceipt(self_), payload))
             }
-            (other_type_,) => Err(SymbolError::MismatchError {
-                pattern: vec![other_type_ as u32],
+            (other_type,) => Err(SymbolError::MismatchError {
+                pattern: vec![other_type as u32],
                 place: "Receipt".to_string(),
             }),
         }
@@ -7221,8 +7225,8 @@ impl HarvestFeeReceipt {
         }
         let version = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
-        let _type_;
-        (_type_, payload) = ReceiptType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = ReceiptType::deserialize(payload)?;
         let mosaic;
         (mosaic, payload) = Mosaic::deserialize(payload)?;
         let target_address;
@@ -7410,8 +7414,8 @@ impl InflationReceipt {
         }
         let version = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
-        let _type_;
-        (_type_, payload) = ReceiptType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = ReceiptType::deserialize(payload)?;
         let mosaic;
         (mosaic, payload) = Mosaic::deserialize(payload)?;
         let self_ = Self { version, mosaic };
@@ -7605,8 +7609,8 @@ impl LockHashCreatedFeeReceipt {
         }
         let version = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
-        let _type_;
-        (_type_, payload) = ReceiptType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = ReceiptType::deserialize(payload)?;
         let mosaic;
         (mosaic, payload) = Mosaic::deserialize(payload)?;
         let target_address;
@@ -7813,8 +7817,8 @@ impl LockHashCompletedFeeReceipt {
         }
         let version = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
-        let _type_;
-        (_type_, payload) = ReceiptType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = ReceiptType::deserialize(payload)?;
         let mosaic;
         (mosaic, payload) = Mosaic::deserialize(payload)?;
         let target_address;
@@ -8021,8 +8025,8 @@ impl LockHashExpiredFeeReceipt {
         }
         let version = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
-        let _type_;
-        (_type_, payload) = ReceiptType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = ReceiptType::deserialize(payload)?;
         let mosaic;
         (mosaic, payload) = Mosaic::deserialize(payload)?;
         let target_address;
@@ -8229,8 +8233,8 @@ impl LockSecretCreatedFeeReceipt {
         }
         let version = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
-        let _type_;
-        (_type_, payload) = ReceiptType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = ReceiptType::deserialize(payload)?;
         let mosaic;
         (mosaic, payload) = Mosaic::deserialize(payload)?;
         let target_address;
@@ -8437,8 +8441,8 @@ impl LockSecretCompletedFeeReceipt {
         }
         let version = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
-        let _type_;
-        (_type_, payload) = ReceiptType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = ReceiptType::deserialize(payload)?;
         let mosaic;
         (mosaic, payload) = Mosaic::deserialize(payload)?;
         let target_address;
@@ -8645,8 +8649,8 @@ impl LockSecretExpiredFeeReceipt {
         }
         let version = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
-        let _type_;
-        (_type_, payload) = ReceiptType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = ReceiptType::deserialize(payload)?;
         let mosaic;
         (mosaic, payload) = Mosaic::deserialize(payload)?;
         let target_address;
@@ -8837,8 +8841,8 @@ impl MosaicExpiredReceipt {
         }
         let version = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
-        let _type_;
-        (_type_, payload) = ReceiptType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = ReceiptType::deserialize(payload)?;
         let artifact_id;
         (artifact_id, payload) = MosaicId::deserialize(payload)?;
         let self_ = Self {
@@ -9061,8 +9065,8 @@ impl MosaicRentalFeeReceipt {
         }
         let version = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
-        let _type_;
-        (_type_, payload) = ReceiptType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = ReceiptType::deserialize(payload)?;
         let mosaic;
         (mosaic, payload) = Mosaic::deserialize(payload)?;
         let sender_address;
@@ -9160,6 +9164,7 @@ impl NamespaceId {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
+#[derive(Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum NamespaceRegistrationType {
@@ -9218,6 +9223,7 @@ impl NamespaceRegistrationType {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
+#[derive(Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum AliasAction {
@@ -9413,8 +9419,8 @@ impl NamespaceExpiredReceipt {
         }
         let version = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
-        let _type_;
-        (_type_, payload) = ReceiptType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = ReceiptType::deserialize(payload)?;
         let artifact_id;
         (artifact_id, payload) = NamespaceId::deserialize(payload)?;
         let self_ = Self {
@@ -9600,8 +9606,8 @@ impl NamespaceDeletedReceipt {
         }
         let version = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
-        let _type_;
-        (_type_, payload) = ReceiptType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = ReceiptType::deserialize(payload)?;
         let artifact_id;
         (artifact_id, payload) = NamespaceId::deserialize(payload)?;
         let self_ = Self {
@@ -9824,8 +9830,8 @@ impl NamespaceRentalFeeReceipt {
         }
         let version = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
-        let _type_;
-        (_type_, payload) = ReceiptType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = ReceiptType::deserialize(payload)?;
         let mosaic;
         (mosaic, payload) = Mosaic::deserialize(payload)?;
         let sender_address;
@@ -11152,8 +11158,8 @@ impl AccountKeyLinkTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -11518,8 +11524,8 @@ impl EmbeddedAccountKeyLinkTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let linked_public_key;
         (linked_public_key, payload) = PublicKey::deserialize(payload)?;
         let link_action;
@@ -11916,8 +11922,8 @@ impl NodeKeyLinkTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -12282,8 +12288,8 @@ impl EmbeddedNodeKeyLinkTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let linked_public_key;
         (linked_public_key, payload) = PublicKey::deserialize(payload)?;
         let link_action;
@@ -13060,8 +13066,8 @@ impl AggregateCompleteTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -13597,8 +13603,8 @@ impl AggregateCompleteTransactionV2 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -14136,8 +14142,8 @@ impl AggregateBondedTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -14675,8 +14681,8 @@ impl AggregateBondedTransactionV2 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -15165,8 +15171,8 @@ impl VotingKeyLinkTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -15575,8 +15581,8 @@ impl EmbeddedVotingKeyLinkTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let linked_public_key;
         (linked_public_key, payload) = VotingPublicKey::deserialize(payload)?;
         let start_epoch;
@@ -15984,8 +15990,8 @@ impl VrfKeyLinkTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -16350,8 +16356,8 @@ impl EmbeddedVrfKeyLinkTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let linked_public_key;
         (linked_public_key, payload) = PublicKey::deserialize(payload)?;
         let link_action;
@@ -16768,8 +16774,8 @@ impl HashLockTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -17156,8 +17162,8 @@ impl EmbeddedHashLockTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let mosaic;
         (mosaic, payload) = UnresolvedMosaic::deserialize(payload)?;
         let duration;
@@ -17236,6 +17242,7 @@ impl TraitSignerPublicKey for EmbeddedHashLockTransactionV1 {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
+#[derive(Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum LockHashAlgorithm {
@@ -17674,8 +17681,8 @@ impl SecretLockTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -18106,8 +18113,8 @@ impl EmbeddedSecretLockTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let recipient_address;
         (recipient_address, payload) = UnresolvedAddress::deserialize(payload)?;
         let secret;
@@ -18587,8 +18594,8 @@ impl SecretProofTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -19040,8 +19047,8 @@ impl EmbeddedSecretProofTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let recipient_address;
         (recipient_address, payload) = UnresolvedAddress::deserialize(payload)?;
         let secret;
@@ -19538,8 +19545,8 @@ impl AccountMetadataTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -20003,8 +20010,8 @@ impl EmbeddedAccountMetadataTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let target_address;
         (target_address, payload) = UnresolvedAddress::deserialize(payload)?;
         let scoped_metadata_key = u64::from_le_bytes(payload[..8].try_into()?);
@@ -20517,8 +20524,8 @@ impl MosaicMetadataTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -21004,8 +21011,8 @@ impl EmbeddedMosaicMetadataTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let target_address;
         (target_address, payload) = UnresolvedAddress::deserialize(payload)?;
         let scoped_metadata_key = u64::from_le_bytes(payload[..8].try_into()?);
@@ -21523,8 +21530,8 @@ impl NamespaceMetadataTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -22010,8 +22017,8 @@ impl EmbeddedNamespaceMetadataTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let target_address;
         (target_address, payload) = UnresolvedAddress::deserialize(payload)?;
         let scoped_metadata_key = u64::from_le_bytes(payload[..8].try_into()?);
@@ -22160,6 +22167,7 @@ impl MosaicNonce {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
+#[derive(Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum MosaicFlags {
@@ -22177,6 +22185,16 @@ impl MosaicFlags {
     }
     pub fn size(&self) -> usize {
         Self::SIZE
+    }
+    pub fn to_num(&self) -> u8 {
+        match self {
+            Self::NONE => 0,
+            Self::SUPPLY_MUTABLE => 1,
+            Self::TRANSFERABLE => 2,
+            Self::RESTRICTABLE => 4,
+            Self::REVOKABLE => 8,
+            Self::X(x) => *x,
+        }
     }
     pub fn deserialize(payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
         if payload.len() < Self::SIZE {
@@ -22210,6 +22228,46 @@ impl MosaicFlags {
         }
     }
 }
+impl BitOr for MosaicFlags {
+    type Output = Self;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        Self::X(self.to_num() | rhs.to_num())
+    }
+}
+impl BitOrAssign for MosaicFlags {
+    fn bitor_assign(&mut self, rhs: Self) {
+        *self = *self | rhs;
+    }
+}
+impl BitAnd for MosaicFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self::X(self.to_num() & rhs.to_num())
+    }
+}
+impl BitAndAssign for MosaicFlags {
+    fn bitand_assign(&mut self, rhs: Self) {
+        *self = *self & rhs;
+    }
+}
+impl BitXor for MosaicFlags {
+    type Output = Self;
+    fn bitxor(self, rhs: Self) -> Self::Output {
+        Self::X(self.to_num() ^ rhs.to_num())
+    }
+}
+impl BitXorAssign for MosaicFlags {
+    fn bitxor_assign(&mut self, rhs: Self) {
+        *self = *self ^ rhs;
+    }
+}
+impl Not for MosaicFlags {
+    type Output = Self;
+    fn not(self) -> Self::Output {
+        Self::X(!self.to_num())
+    }
+}
+
 ///Enumeration of mosaic supply change actions.
 //name: MosaicSupplyChangeAction
 //base: <class 'catparser.ast.FixedSizeInteger'>
@@ -22233,6 +22291,7 @@ impl MosaicFlags {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
+#[derive(Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum MosaicSupplyChangeAction {
@@ -22673,8 +22732,8 @@ impl MosaicDefinitionTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -23111,8 +23170,8 @@ impl EmbeddedMosaicDefinitionTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let id;
         (id, payload) = MosaicId::deserialize(payload)?;
         let duration;
@@ -23540,8 +23599,8 @@ impl MosaicSupplyChangeTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -23928,8 +23987,8 @@ impl EmbeddedMosaicSupplyChangeTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let mosaic_id;
         (mosaic_id, payload) = UnresolvedMosaicId::deserialize(payload)?;
         let delta;
@@ -24330,8 +24389,8 @@ impl MosaicSupplyRevocationTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -24696,8 +24755,8 @@ impl EmbeddedMosaicSupplyRevocationTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let source_address;
         (source_address, payload) = UnresolvedAddress::deserialize(payload)?;
         let mosaic;
@@ -25221,8 +25280,8 @@ impl MultisigAccountModificationTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -25758,8 +25817,8 @@ impl EmbeddedMultisigAccountModificationTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let min_removal_delta = i8::from_le_bytes(payload[..1].try_into()?);
         payload = &payload[1..];
         let min_approval_delta = i8::from_le_bytes(payload[..1].try_into()?);
@@ -26217,8 +26276,8 @@ impl AddressAliasTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -26605,8 +26664,8 @@ impl EmbeddedAddressAliasTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let namespace_id;
         (namespace_id, payload) = NamespaceId::deserialize(payload)?;
         let address;
@@ -27025,8 +27084,8 @@ impl MosaicAliasTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -27413,8 +27472,8 @@ impl EmbeddedMosaicAliasTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let namespace_id;
         (namespace_id, payload) = NamespaceId::deserialize(payload)?;
         let mosaic_id;
@@ -27799,7 +27858,7 @@ pub struct NamespaceRegistrationTransactionV1 {
     pub duration: BlockDuration,
     pub parent_id: NamespaceId,
     pub id: NamespaceId,
-    pub registration_type_: NamespaceRegistrationType,
+    pub registration_type: NamespaceRegistrationType,
     pub name: Vec<u8>,
 }
 impl NamespaceRegistrationTransactionV1 {
@@ -27819,7 +27878,7 @@ impl NamespaceRegistrationTransactionV1 {
         duration: BlockDuration,
         parent_id: NamespaceId,
         id: NamespaceId,
-        registration_type_: NamespaceRegistrationType,
+        registration_type: NamespaceRegistrationType,
         name: Vec<u8>,
     ) -> Self {
         Self {
@@ -27831,7 +27890,7 @@ impl NamespaceRegistrationTransactionV1 {
             duration,
             parent_id,
             id,
-            registration_type_,
+            registration_type,
             name,
         }
     }
@@ -27845,7 +27904,7 @@ impl NamespaceRegistrationTransactionV1 {
             duration: BlockDuration::default(),
             parent_id: NamespaceId::default(),
             id: NamespaceId::default(),
-            registration_type_: NamespaceRegistrationType::default(),
+            registration_type: NamespaceRegistrationType::default(),
             name: Vec::new(),
         }
     }
@@ -27864,7 +27923,7 @@ impl NamespaceRegistrationTransactionV1 {
         size += self.duration.size();
         size += self.parent_id.size();
         size += self.id.size();
-        size += self.registration_type_.size();
+        size += self.registration_type.size();
         size += 1;
         size += 1 * self.name.len();
         size
@@ -27906,8 +27965,8 @@ impl NamespaceRegistrationTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -27918,8 +27977,8 @@ impl NamespaceRegistrationTransactionV1 {
         (parent_id, payload) = NamespaceId::deserialize(payload)?;
         let id;
         (id, payload) = NamespaceId::deserialize(payload)?;
-        let registration_type_;
-        (registration_type_, payload) = NamespaceRegistrationType::deserialize(payload)?;
+        let registration_type;
+        (registration_type, payload) = NamespaceRegistrationType::deserialize(payload)?;
         let name_size = u8::from_le_bytes(payload[..1].try_into()?);
         payload = &payload[1..];
         let mut name = Vec::new();
@@ -27939,7 +27998,7 @@ impl NamespaceRegistrationTransactionV1 {
             duration,
             parent_id,
             id,
-            registration_type_,
+            registration_type,
             name,
         };
         Ok((self_, payload))
@@ -27958,7 +28017,7 @@ impl NamespaceRegistrationTransactionV1 {
         let duration = self.duration.serialize();
         let parent_id = self.parent_id.serialize();
         let id = self.id.serialize();
-        let registration_type_ = self.registration_type_.serialize();
+        let registration_type = self.registration_type.serialize();
         let name_size = (self.name.len() as u8).to_le_bytes();
         let name: Vec<u8> = self.name.iter().flat_map(|x| x.to_le_bytes()).collect();
         [
@@ -27975,7 +28034,7 @@ impl NamespaceRegistrationTransactionV1 {
             duration.iter(),
             parent_id.iter(),
             id.iter(),
-            registration_type_.iter(),
+            registration_type.iter(),
             name_size.iter(),
             name.iter(),
         ]
@@ -28293,7 +28352,7 @@ pub struct EmbeddedNamespaceRegistrationTransactionV1 {
     pub duration: BlockDuration,
     pub parent_id: NamespaceId,
     pub id: NamespaceId,
-    pub registration_type_: NamespaceRegistrationType,
+    pub registration_type: NamespaceRegistrationType,
     pub name: Vec<u8>,
 }
 impl EmbeddedNamespaceRegistrationTransactionV1 {
@@ -28311,7 +28370,7 @@ impl EmbeddedNamespaceRegistrationTransactionV1 {
         duration: BlockDuration,
         parent_id: NamespaceId,
         id: NamespaceId,
-        registration_type_: NamespaceRegistrationType,
+        registration_type: NamespaceRegistrationType,
         name: Vec<u8>,
     ) -> Self {
         Self {
@@ -28320,7 +28379,7 @@ impl EmbeddedNamespaceRegistrationTransactionV1 {
             duration,
             parent_id,
             id,
-            registration_type_,
+            registration_type,
             name,
         }
     }
@@ -28331,7 +28390,7 @@ impl EmbeddedNamespaceRegistrationTransactionV1 {
             duration: BlockDuration::default(),
             parent_id: NamespaceId::default(),
             id: NamespaceId::default(),
-            registration_type_: NamespaceRegistrationType::default(),
+            registration_type: NamespaceRegistrationType::default(),
             name: Vec::new(),
         }
     }
@@ -28347,7 +28406,7 @@ impl EmbeddedNamespaceRegistrationTransactionV1 {
         size += self.duration.size();
         size += self.parent_id.size();
         size += self.id.size();
-        size += self.registration_type_.size();
+        size += self.registration_type.size();
         size += 1;
         size += 1 * self.name.len();
         size
@@ -28387,16 +28446,16 @@ impl EmbeddedNamespaceRegistrationTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let duration;
         (duration, payload) = BlockDuration::deserialize(payload)?;
         let parent_id;
         (parent_id, payload) = NamespaceId::deserialize(payload)?;
         let id;
         (id, payload) = NamespaceId::deserialize(payload)?;
-        let registration_type_;
-        (registration_type_, payload) = NamespaceRegistrationType::deserialize(payload)?;
+        let registration_type;
+        (registration_type, payload) = NamespaceRegistrationType::deserialize(payload)?;
         let name_size = u8::from_le_bytes(payload[..1].try_into()?);
         payload = &payload[1..];
         let mut name = Vec::new();
@@ -28413,7 +28472,7 @@ impl EmbeddedNamespaceRegistrationTransactionV1 {
             duration,
             parent_id,
             id,
-            registration_type_,
+            registration_type,
             name,
         };
         Ok((self_, payload))
@@ -28429,7 +28488,7 @@ impl EmbeddedNamespaceRegistrationTransactionV1 {
         let duration = self.duration.serialize();
         let parent_id = self.parent_id.serialize();
         let id = self.id.serialize();
-        let registration_type_ = self.registration_type_.serialize();
+        let registration_type = self.registration_type.serialize();
         let name_size = (self.name.len() as u8).to_le_bytes();
         let name: Vec<u8> = self.name.iter().flat_map(|x| x.to_le_bytes()).collect();
         [
@@ -28443,7 +28502,7 @@ impl EmbeddedNamespaceRegistrationTransactionV1 {
             duration.iter(),
             parent_id.iter(),
             id.iter(),
-            registration_type_.iter(),
+            registration_type.iter(),
             name_size.iter(),
             name.iter(),
         ]
@@ -28498,6 +28557,7 @@ impl TraitSignerPublicKey for EmbeddedNamespaceRegistrationTransactionV1 {
 //*size: 2
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
+#[derive(Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u16)]
 pub enum AccountRestrictionFlags {
@@ -28515,6 +28575,16 @@ impl AccountRestrictionFlags {
     }
     pub fn size(&self) -> usize {
         Self::SIZE
+    }
+    pub fn to_num(&self) -> u16 {
+        match self {
+            Self::ADDRESS => 1,
+            Self::MOSAIC_ID => 2,
+            Self::TRANSACTION_TYPE => 4,
+            Self::OUTGOING => 16384,
+            Self::BLOCK => 32768,
+            Self::X(x) => *x,
+        }
     }
     pub fn deserialize(payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
         if payload.len() < Self::SIZE {
@@ -28548,6 +28618,46 @@ impl AccountRestrictionFlags {
         }
     }
 }
+impl BitOr for AccountRestrictionFlags {
+    type Output = Self;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        Self::X(self.to_num() | rhs.to_num())
+    }
+}
+impl BitOrAssign for AccountRestrictionFlags {
+    fn bitor_assign(&mut self, rhs: Self) {
+        *self = *self | rhs;
+    }
+}
+impl BitAnd for AccountRestrictionFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self::X(self.to_num() & rhs.to_num())
+    }
+}
+impl BitAndAssign for AccountRestrictionFlags {
+    fn bitand_assign(&mut self, rhs: Self) {
+        *self = *self & rhs;
+    }
+}
+impl BitXor for AccountRestrictionFlags {
+    type Output = Self;
+    fn bitxor(self, rhs: Self) -> Self::Output {
+        Self::X(self.to_num() ^ rhs.to_num())
+    }
+}
+impl BitXorAssign for AccountRestrictionFlags {
+    fn bitxor_assign(&mut self, rhs: Self) {
+        *self = *self ^ rhs;
+    }
+}
+impl Not for AccountRestrictionFlags {
+    type Output = Self;
+    fn not(self) -> Self::Output {
+        Self::X(!self.to_num())
+    }
+}
+
 ///Allow or block incoming and outgoing transactions for a given a set of addresses (V1, latest).
 //name: AccountAddressRestrictionTransactionV1
 //disposition: None
@@ -28994,8 +29104,8 @@ impl AccountAddressRestrictionTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -29497,8 +29607,8 @@ impl EmbeddedAccountAddressRestrictionTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let restriction_flags;
         (restriction_flags, payload) = AccountRestrictionFlags::deserialize(payload)?;
         let restriction_additions_count = u8::from_le_bytes(payload[..1].try_into()?);
@@ -30031,8 +30141,8 @@ impl AccountMosaicRestrictionTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -30534,8 +30644,8 @@ impl EmbeddedAccountMosaicRestrictionTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let restriction_flags;
         (restriction_flags, payload) = AccountRestrictionFlags::deserialize(payload)?;
         let restriction_additions_count = u8::from_le_bytes(payload[..1].try_into()?);
@@ -31068,8 +31178,8 @@ impl AccountOperationRestrictionTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -31571,8 +31681,8 @@ impl EmbeddedAccountOperationRestrictionTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let restriction_flags;
         (restriction_flags, payload) = AccountRestrictionFlags::deserialize(payload)?;
         let restriction_additions_count = u8::from_le_bytes(payload[..1].try_into()?);
@@ -32076,8 +32186,8 @@ impl MosaicAddressRestrictionTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -32526,8 +32636,8 @@ impl EmbeddedMosaicAddressRestrictionTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let mosaic_id;
         (mosaic_id, payload) = UnresolvedMosaicId::deserialize(payload)?;
         let restriction_key = u64::from_le_bytes(payload[..8].try_into()?);
@@ -32667,6 +32777,7 @@ impl MosaicRestrictionKey {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
+#[derive(Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum MosaicRestrictionType {
@@ -33049,8 +33160,8 @@ pub struct MosaicGlobalRestrictionTransactionV1 {
     pub restriction_key: u64,
     pub previous_restriction_value: u64,
     pub new_restriction_value: u64,
-    pub previous_restriction_type_: MosaicRestrictionType,
-    pub new_restriction_type_: MosaicRestrictionType,
+    pub previous_restriction_type: MosaicRestrictionType,
+    pub new_restriction_type: MosaicRestrictionType,
 }
 impl MosaicGlobalRestrictionTransactionV1 {
     pub const TRANSACTION_VERSION: u8 = 1;
@@ -33071,8 +33182,8 @@ impl MosaicGlobalRestrictionTransactionV1 {
         restriction_key: u64,
         previous_restriction_value: u64,
         new_restriction_value: u64,
-        previous_restriction_type_: MosaicRestrictionType,
-        new_restriction_type_: MosaicRestrictionType,
+        previous_restriction_type: MosaicRestrictionType,
+        new_restriction_type: MosaicRestrictionType,
     ) -> Self {
         Self {
             signature: Signature::default(),
@@ -33085,8 +33196,8 @@ impl MosaicGlobalRestrictionTransactionV1 {
             restriction_key,
             previous_restriction_value,
             new_restriction_value,
-            previous_restriction_type_,
-            new_restriction_type_,
+            previous_restriction_type,
+            new_restriction_type,
         }
     }
     pub fn default() -> Self {
@@ -33101,8 +33212,8 @@ impl MosaicGlobalRestrictionTransactionV1 {
             restriction_key: u64::default(),
             previous_restriction_value: u64::default(),
             new_restriction_value: u64::default(),
-            previous_restriction_type_: MosaicRestrictionType::default(),
-            new_restriction_type_: MosaicRestrictionType::default(),
+            previous_restriction_type: MosaicRestrictionType::default(),
+            new_restriction_type: MosaicRestrictionType::default(),
         }
     }
     pub fn size(&self) -> usize {
@@ -33122,8 +33233,8 @@ impl MosaicGlobalRestrictionTransactionV1 {
         size += 8;
         size += 8;
         size += 8;
-        size += self.previous_restriction_type_.size();
-        size += self.new_restriction_type_.size();
+        size += self.previous_restriction_type.size();
+        size += self.new_restriction_type.size();
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
@@ -33163,8 +33274,8 @@ impl MosaicGlobalRestrictionTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -33179,10 +33290,10 @@ impl MosaicGlobalRestrictionTransactionV1 {
         payload = &payload[8..];
         let new_restriction_value = u64::from_le_bytes(payload[..8].try_into()?);
         payload = &payload[8..];
-        let previous_restriction_type_;
-        (previous_restriction_type_, payload) = MosaicRestrictionType::deserialize(payload)?;
-        let new_restriction_type_;
-        (new_restriction_type_, payload) = MosaicRestrictionType::deserialize(payload)?;
+        let previous_restriction_type;
+        (previous_restriction_type, payload) = MosaicRestrictionType::deserialize(payload)?;
+        let new_restriction_type;
+        (new_restriction_type, payload) = MosaicRestrictionType::deserialize(payload)?;
         let self_ = Self {
             signature,
             signer_public_key,
@@ -33194,8 +33305,8 @@ impl MosaicGlobalRestrictionTransactionV1 {
             restriction_key,
             previous_restriction_value,
             new_restriction_value,
-            previous_restriction_type_,
-            new_restriction_type_,
+            previous_restriction_type,
+            new_restriction_type,
         };
         Ok((self_, payload))
     }
@@ -33215,8 +33326,8 @@ impl MosaicGlobalRestrictionTransactionV1 {
         let restriction_key = self.restriction_key.to_le_bytes();
         let previous_restriction_value = self.previous_restriction_value.to_le_bytes();
         let new_restriction_value = self.new_restriction_value.to_le_bytes();
-        let previous_restriction_type_ = self.previous_restriction_type_.serialize();
-        let new_restriction_type_ = self.new_restriction_type_.serialize();
+        let previous_restriction_type = self.previous_restriction_type.serialize();
+        let new_restriction_type = self.new_restriction_type.serialize();
         [
             size.iter(),
             verifiable_entity_header_reserved_1.iter(),
@@ -33233,8 +33344,8 @@ impl MosaicGlobalRestrictionTransactionV1 {
             restriction_key.iter(),
             previous_restriction_value.iter(),
             new_restriction_value.iter(),
-            previous_restriction_type_.iter(),
-            new_restriction_type_.iter(),
+            previous_restriction_type.iter(),
+            new_restriction_type.iter(),
         ]
         .into_iter()
         .flat_map(|a| a)
@@ -33556,8 +33667,8 @@ pub struct EmbeddedMosaicGlobalRestrictionTransactionV1 {
     pub restriction_key: u64,
     pub previous_restriction_value: u64,
     pub new_restriction_value: u64,
-    pub previous_restriction_type_: MosaicRestrictionType,
-    pub new_restriction_type_: MosaicRestrictionType,
+    pub previous_restriction_type: MosaicRestrictionType,
+    pub new_restriction_type: MosaicRestrictionType,
 }
 impl EmbeddedMosaicGlobalRestrictionTransactionV1 {
     pub const TRANSACTION_VERSION: u8 = 1;
@@ -33576,8 +33687,8 @@ impl EmbeddedMosaicGlobalRestrictionTransactionV1 {
         restriction_key: u64,
         previous_restriction_value: u64,
         new_restriction_value: u64,
-        previous_restriction_type_: MosaicRestrictionType,
-        new_restriction_type_: MosaicRestrictionType,
+        previous_restriction_type: MosaicRestrictionType,
+        new_restriction_type: MosaicRestrictionType,
     ) -> Self {
         Self {
             signer_public_key,
@@ -33587,8 +33698,8 @@ impl EmbeddedMosaicGlobalRestrictionTransactionV1 {
             restriction_key,
             previous_restriction_value,
             new_restriction_value,
-            previous_restriction_type_,
-            new_restriction_type_,
+            previous_restriction_type,
+            new_restriction_type,
         }
     }
     pub fn default() -> Self {
@@ -33600,8 +33711,8 @@ impl EmbeddedMosaicGlobalRestrictionTransactionV1 {
             restriction_key: u64::default(),
             previous_restriction_value: u64::default(),
             new_restriction_value: u64::default(),
-            previous_restriction_type_: MosaicRestrictionType::default(),
-            new_restriction_type_: MosaicRestrictionType::default(),
+            previous_restriction_type: MosaicRestrictionType::default(),
+            new_restriction_type: MosaicRestrictionType::default(),
         }
     }
     pub fn size(&self) -> usize {
@@ -33618,8 +33729,8 @@ impl EmbeddedMosaicGlobalRestrictionTransactionV1 {
         size += 8;
         size += 8;
         size += 8;
-        size += self.previous_restriction_type_.size();
-        size += self.new_restriction_type_.size();
+        size += self.previous_restriction_type.size();
+        size += self.new_restriction_type.size();
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
@@ -33657,8 +33768,8 @@ impl EmbeddedMosaicGlobalRestrictionTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let mosaic_id;
         (mosaic_id, payload) = UnresolvedMosaicId::deserialize(payload)?;
         let reference_mosaic_id;
@@ -33669,10 +33780,10 @@ impl EmbeddedMosaicGlobalRestrictionTransactionV1 {
         payload = &payload[8..];
         let new_restriction_value = u64::from_le_bytes(payload[..8].try_into()?);
         payload = &payload[8..];
-        let previous_restriction_type_;
-        (previous_restriction_type_, payload) = MosaicRestrictionType::deserialize(payload)?;
-        let new_restriction_type_;
-        (new_restriction_type_, payload) = MosaicRestrictionType::deserialize(payload)?;
+        let previous_restriction_type;
+        (previous_restriction_type, payload) = MosaicRestrictionType::deserialize(payload)?;
+        let new_restriction_type;
+        (new_restriction_type, payload) = MosaicRestrictionType::deserialize(payload)?;
         let self_ = Self {
             signer_public_key,
             network,
@@ -33681,8 +33792,8 @@ impl EmbeddedMosaicGlobalRestrictionTransactionV1 {
             restriction_key,
             previous_restriction_value,
             new_restriction_value,
-            previous_restriction_type_,
-            new_restriction_type_,
+            previous_restriction_type,
+            new_restriction_type,
         };
         Ok((self_, payload))
     }
@@ -33699,8 +33810,8 @@ impl EmbeddedMosaicGlobalRestrictionTransactionV1 {
         let restriction_key = self.restriction_key.to_le_bytes();
         let previous_restriction_value = self.previous_restriction_value.to_le_bytes();
         let new_restriction_value = self.new_restriction_value.to_le_bytes();
-        let previous_restriction_type_ = self.previous_restriction_type_.serialize();
-        let new_restriction_type_ = self.new_restriction_type_.serialize();
+        let previous_restriction_type = self.previous_restriction_type.serialize();
+        let new_restriction_type = self.new_restriction_type.serialize();
         [
             size.iter(),
             embedded_transaction_header_reserved_1.iter(),
@@ -33714,8 +33825,8 @@ impl EmbeddedMosaicGlobalRestrictionTransactionV1 {
             restriction_key.iter(),
             previous_restriction_value.iter(),
             new_restriction_value.iter(),
-            previous_restriction_type_.iter(),
-            new_restriction_type_.iter(),
+            previous_restriction_type.iter(),
+            new_restriction_type.iter(),
         ]
         .into_iter()
         .flat_map(|a| a)
@@ -34200,8 +34311,8 @@ impl TransferTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let fee;
         (fee, payload) = Amount::deserialize(payload)?;
         let deadline;
@@ -34736,8 +34847,8 @@ impl EmbeddedTransferTransactionV1 {
         payload = &payload[1..];
         let network;
         (network, payload) = NetworkType::deserialize(payload)?;
-        let _type_;
-        (_type_, payload) = TransactionType::deserialize(payload)?;
+        let _type;
+        (_type, payload) = TransactionType::deserialize(payload)?;
         let recipient_address;
         (recipient_address, payload) = UnresolvedAddress::deserialize(payload)?;
         let message_size = u16::from_le_bytes(payload[..2].try_into()?);

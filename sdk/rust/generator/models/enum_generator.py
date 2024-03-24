@@ -4,6 +4,7 @@ from catparser.DisplayType import DisplayType
 def generate_enum(ast_model):
     # common (i.e. prepare)
     ret = '// generated from generate_enum()\n'
+    ret += '#[derive(Copy)]'
     name_lower = ast_model.name.lower()
     value_bit_width = ast_model.size * 8
     if value_bit_width not in (8, 16, 32, 64):
@@ -45,6 +46,22 @@ def generate_enum(ast_model):
     ret += 'pub fn size(&self) -> usize {'
     ret += f'Self::SIZE'
     ret += '}'
+    
+    ## to_num
+    if ast_model.is_bitwise:
+        ret += f'pub fn to_num(&self) -> {value_type} {{'
+        ret += 'match self {'
+        ret += ''.join(
+            list(
+                map(
+                    lambda e: f'Self::{e.name} => {e.value},',
+                    ast_model.values,
+                )
+            )
+        )
+        ret += 'Self::X(x) => *x'
+        ret += '}'
+        ret += '}'
 
     ## deserialize
     ret += f'pub fn deserialize(payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {{'
@@ -98,8 +115,48 @@ def generate_enum(ast_model):
     # end
     ret += '}'
     
-    # BitOr
+    # Bit OP
     if ast_model.is_bitwise:
-        pass
+        ret += f'''
+            impl BitOr for {ast_model.name} {{
+                type Output = Self;
+                fn bitor(self, rhs: Self) -> Self::Output {{
+                    Self::X(self.to_num() | rhs.to_num())
+                }}
+            }}
+            impl BitOrAssign for {ast_model.name} {{
+                fn bitor_assign(&mut self, rhs: Self) {{
+                    *self = *self | rhs;
+                }}
+            }}
+            impl BitAnd for {ast_model.name} {{
+                type Output = Self;
+                fn bitand(self, rhs: Self) -> Self::Output {{
+                    Self::X(self.to_num() & rhs.to_num())
+                }}
+            }}
+            impl BitAndAssign for {ast_model.name} {{
+                fn bitand_assign(&mut self, rhs: Self) {{
+                    *self = *self & rhs;
+                }}
+            }}
+            impl BitXor for {ast_model.name} {{
+                type Output = Self;
+                fn bitxor(self, rhs: Self) -> Self::Output {{
+                    Self::X(self.to_num() ^ rhs.to_num())
+                }}
+            }}
+            impl BitXorAssign for {ast_model.name} {{
+                fn bitxor_assign(&mut self, rhs: Self) {{
+                    *self = *self ^ rhs;
+                }}
+            }}
+            impl Not for {ast_model.name} {{
+                type Output = Self;
+                fn not(self) -> Self::Output {{
+                    Self::X(!self.to_num())
+                }}
+            }}
+        '''
 
     return ret

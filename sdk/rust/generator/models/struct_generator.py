@@ -205,8 +205,6 @@ def generate_struct(ast_model):
     ret += '}'
     ret += '}'
     
-    ret = ret.replace('type', 'type_')
-    
     ## trait
     for f in ast_model.fields:
         fn = f.name
@@ -222,4 +220,4 @@ def generate_struct(ast_model):
         ret += f'fn set_{fn}(&mut self, {fn}: {ft}) {{ self.{fn} = {fn}; }}'
         ret += f'}}'
         
-    return ret
+    return ret.replace('type', 'type_').replace('_type_', '_type')

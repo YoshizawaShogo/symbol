@@ -156,6 +156,6 @@ def generate_factory(factory, products):
     for p in products:
         ret += f'impl From<{p.name}> for {factory_name} {{ fn from(value: {p.name}) -> Self {{ Self::{p.name}(value) }} }}'
     
-    return ret.replace('type', 'type_')
+    return ret.replace('type', 'type_').replace('_type_', '_type')
     
     

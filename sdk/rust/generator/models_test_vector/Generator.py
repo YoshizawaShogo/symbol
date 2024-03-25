@@ -10,6 +10,8 @@ from catparser.DisplayType import DisplayType
 from generator import util
 from generator import constant
 
+RUST_PRIMITIVE_INTEGER = ("uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64")
+
 class Generator:
     @staticmethod
     def generate(ast_models, output):
@@ -17,102 +19,146 @@ class Generator:
         generate_files(ast_models, Path(output))
 
 def generate_files(ast_models, output_path: Path):
-    util.update_int_type_of_struct(ast_models)
+    # util.update_int_type_of_struct(ast_models)
     
-    type_dict = {} # key: type_name, value: DisplayType of type_name
-    ast_model_dict = {} # key: ast_model_name, value: ast_model
-
-    for ast_model in ast_models:
-        ast_model_dict[ast_model.name] = ast_model
-        name = ast_model.name
-        display_type = ast_model.display_type
-        # if display_type == DisplayType.STRUCT:
-        #     continue
-        type_dict[name] = display_type
-
-    PRIMITIVE_INTEGER = "Primitive Integer"
-    type_dict["u8"] = PRIMITIVE_INTEGER
-    type_dict["u16"] = PRIMITIVE_INTEGER
-    type_dict["u32"] = PRIMITIVE_INTEGER
-    type_dict["u64"] = PRIMITIVE_INTEGER
-    type_dict["i8"] = PRIMITIVE_INTEGER
-    type_dict["i16"] = PRIMITIVE_INTEGER
-    type_dict["i32"] = PRIMITIVE_INTEGER
-    type_dict["i64"] = PRIMITIVE_INTEGER
+    type_dict = get_type_dict(ast_models)
+    # ast_model_dict = get_ast_model_dict(ast_models)
     
-    output = '#[cfg(not(feature = "private_network"))] mod symbol_models_test {use hex::decode; use symbol::symbol::prelude::*;'
+    output = '#[cfg(not(feature = "private_network"))] mod symbol_models_test {use std::str::FromStr; use symbol::symbol::prelude::*;'
     
     # transaction
     with open("../../tests/vectors/symbol/models/transactions.json") as f:
         json_data =  json.load(f)
-        
+    
     for test in json_data:
-        output += constant.TEST_FUNC_HEADER
-        output += f'fn {test["test_name"]}() {{'
-        output += f'let mut tx = {test["schema_name"]}::default();'
-        output += 'tx.network = NetworkType::TESTNET;'
-        
-        target = test["schema_name"]
-        ast_model_fields = ast_model_dict[target].fields
-        for key, value in test["descriptor"].items():
-            if key == "type":
-                continue
-            name_list = [f.name for f in ast_model_fields]
-            if key not in name_list:
-                continue
-                        
-            index = [f.name for f in ast_model_fields].index(key)
-            f = ast_model_fields[index]
-            print("### ", test["test_name"])
-            print(key)
-            if type(f.field_type) == catparser.ast.Array:
-                print(f.field_type.element_type)
-                dis_type = type_dict[str(f.field_type.element_type)]
-                if dis_type == PRIMITIVE_INTEGER:
-                    output += f'tx.{key}.extend_from_slice("{value}".as_bytes());'
-                for value in value:
-                    if dis_type == DisplayType.STRUCT:
-                        print("out")
-                    elif dis_type == DisplayType.ENUM:
-                        value = value.upper()
-                        output += f'tx.{key}.push({f.field_type.element_type}::{value.upper()});'
-                    elif dis_type == DisplayType.BYTE_ARRAY:
-                        output += f'tx.{key}.push({f.field_type.element_type}::from_str("{value}").unwrap());'
-                    elif dis_type == DisplayType.INTEGER:
-                        pass
-                    elif dis_type == PRIMITIVE_INTEGER:
-                        pass
-                    else:
-                        exit('??')
-                continue
-            dis_type = type_dict[str(f.field_type)]
-            
-            if dis_type == DisplayType.STRUCT:
-                base = key
-                for key, value in value.items():
-                    if key == "type":
-                        continue
-                    output += f"tx.{base}.{key} = {f.field_type}({value});"
-            elif dis_type == DisplayType.ENUM:
-                value = value.upper()
-                if ' ' in value:
-                    values = value.split(" ")
-                    output += f'tx.{key} = '
-                    for value in values:
-                        output += f'{f.field_type}::{value.upper()}|'
-                    output = output[:-1] + ';'
-                else:
-                    output += f'tx.{key} = {f.field_type}::{value.upper()};'
-                continue
-            elif dis_type == DisplayType.BYTE_ARRAY:
-                continue
-            elif dis_type == DisplayType.INTEGER:
-                output += f'tx.{key} = {f.field_type}({value});'
-            elif dis_type == PRIMITIVE_INTEGER:
-                output += f'tx.{key} = {value};'
-                
-        output += '}'
+        output += parse_test(test, type_dict, ast_models)
+
     output += '}'
     with open(output_path, 'w', encoding='utf8', newline='') as output_file:
         output_file.write(output)
+
+def get_type_dict(ast_models):
+    type_dict = {} # key: type_name, value: ast
+    for ast_model in ast_models:
+        name = ast_model.name
+        type_dict[name] = ast_model
+    
+    return type_dict
+
+def search_ast_model(ast_model_name, ast_models):
+    print("\n%%IN?", ast_model_name, [f.name for f in ast_models])
+    index = [f.name for f in ast_models].index(ast_model_name)
+    astmodel = ast_models[index]
+    return astmodel
+
+def parse_test(json_data_of_test, type_dict, ast_models):
+    # -> test一つ分丸ごと
+    test = json_data_of_test
+    
+    # header
+    ret = ''
+    ret += constant.TEST_FUNC_HEADER
+    ret += f'fn {test["test_name"]}() {{'
+    
+    
+    print("#", test["test_name"])
+    # exe
+    struct = search_ast_model(test["schema_name"], ast_models)
+    ret += "let tx = "
+    ret += parse_struct_rhs(struct, test["descriptor"], type_dict)
+    ret += ";"
+    
+    # footer
+    ret += '}'
+    return ret
+
+def parse_struct_rhs(ast_model_of_struct, json_of_struct: list, type_dict):
+    ret = '{'
+    ret += f'let mut tmp_struct = {ast_model_of_struct.name}::default();'
+    if 'network' in [f.name for f in ast_model_of_struct.fields]:
+        ret += f'tmp_struct.network = NetworkType::TESTNET;'
+    
+    for variable, value in json_of_struct.items():
+        if variable == 'type':
+            continue
+        
+        field_ast_model = search_ast_model(variable, ast_model_of_struct.fields)
+        field_type = field_ast_model.field_type
+        # if field_type == "PublicKey" or field_type == "Signature":
+        
+        ret += f"tmp_struct.{variable} = "
+        if str(field_type) in RUST_PRIMITIVE_INTEGER:
+            ret += parse_primitive_integer_rhs(value)
+        elif type(field_type) == catparser.ast.Array: # ast_modelが配列
+            ret += parse_vec_rhs(field_type.element_type, value, type_dict)
+        else:
+            ast_model = type_dict[field_type]
+            diplay_type = ast_model.display_type
+            if diplay_type == DisplayType.STRUCT:
+                ret += parse_struct_rhs(ast_model, value, type_dict)
+            elif diplay_type == DisplayType.ENUM:
+                ret += parse_enum_rhs(ast_model, value, type_dict)
+            elif diplay_type == DisplayType.BYTE_ARRAY:
+                ret += parse_byte_array_rhs(ast_model, value, type_dict)
+            elif diplay_type == DisplayType.INTEGER:
+                ret += parse_integer_rhs(ast_model, value, type_dict)
+            else:
+                exit("unexpected")
+        ret += ";"
+    
+    ret += 'tmp_struct }'
+    return ret
+
+def parse_primitive_integer_rhs(value):
+    return f'{value}'
+def parse_integer_rhs(ast_model_of_integer, value, type_dict):
+    return f'{ast_model_of_integer.name}({value})'
+def parse_enum_rhs(ast_model_of_enum, value, type_dict):
+    enum_type = ast_model_of_enum.name
+    value = value.upper()
+    ret = ''
+    if ' ' in value:
+        values = value.split(" ")
+        for value in values:
+            ret += f'{enum_type}::{value} |'
+        ret = ret[:-1]
+    else:
+        ret += f'{enum_type}::{value}'
+    return ret
+def parse_byte_array_rhs(ast_model_of_byte_array, value, type_dict):
+    return f'{ast_model_of_byte_array.name}::from_str("{value}").unwrap()'
+def parse_vec_rhs(element_type, value, type_dict):
+    if str(element_type) in "uint8":
+        return f'"{value}".as_bytes().to_vec()'
+
+    ast_model = type_dict[element_type]
+    diplay_type = ast_model.display_type
+    ret = '{'
+    ret += 'let mut tmp_vec = Vec::new();'
+    values = value
+    print("\nvalues", values)
+    for value in values:
+        print("\nvalues", values)
+        print("\nvalue", value)
+        ret += 'tmp_vec.push('
+        if diplay_type == DisplayType.STRUCT:
+            if element_type == "EmbeddedTransaction":
+                embedded_element_type = "Embedded" + util.snake_to_camel(value["type"])
+                embedded_ast_model = type_dict[embedded_element_type]
+                ret += parse_struct_rhs(embedded_ast_model, value, type_dict)
+                ret += ".into()"
+            else:
+                print("\nAA", element_type, ast_model.name, value)
+                ret += parse_struct_rhs(ast_model, value, type_dict)
+        elif diplay_type == DisplayType.ENUM:
+            ret += parse_enum_rhs(ast_model, value, type_dict)
+        elif diplay_type == DisplayType.BYTE_ARRAY:
+            ret += parse_byte_array_rhs(ast_model, value, type_dict)
+        elif diplay_type == DisplayType.INTEGER:
+            ret += parse_integer_rhs(ast_model, value, type_dict)
+        else:
+            exit("unexpected")
+        ret += ');'
+    ret += 'tmp_vec}'
+    return ret
     

@@ -4873,7 +4873,7 @@ impl NemesisBlockV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -5508,7 +5508,7 @@ impl NormalBlockV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -6192,7 +6192,7 @@ impl ImportanceBlockV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -7217,7 +7217,7 @@ impl HarvestFeeReceipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -7406,7 +7406,7 @@ impl InflationReceipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -7601,7 +7601,7 @@ impl LockHashCreatedFeeReceipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -7809,7 +7809,7 @@ impl LockHashCompletedFeeReceipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -8017,7 +8017,7 @@ impl LockHashExpiredFeeReceipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -8225,7 +8225,7 @@ impl LockSecretCreatedFeeReceipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -8433,7 +8433,7 @@ impl LockSecretCompletedFeeReceipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -8641,7 +8641,7 @@ impl LockSecretExpiredFeeReceipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -8833,7 +8833,7 @@ impl MosaicExpiredReceipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -9057,7 +9057,7 @@ impl MosaicRentalFeeReceipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -9411,7 +9411,7 @@ impl NamespaceExpiredReceipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -9598,7 +9598,7 @@ impl NamespaceDeletedReceipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -9822,7 +9822,7 @@ impl NamespaceRentalFeeReceipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -11130,7 +11130,7 @@ impl AccountKeyLinkTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -11498,7 +11498,7 @@ impl EmbeddedAccountKeyLinkTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -11894,7 +11894,7 @@ impl NodeKeyLinkTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -12262,7 +12262,7 @@ impl EmbeddedNodeKeyLinkTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -13038,7 +13038,7 @@ impl AggregateCompleteTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -13575,7 +13575,7 @@ impl AggregateCompleteTransactionV2 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -14114,7 +14114,7 @@ impl AggregateBondedTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -14653,7 +14653,7 @@ impl AggregateBondedTransactionV2 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -15143,7 +15143,7 @@ impl VotingKeyLinkTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -15555,7 +15555,7 @@ impl EmbeddedVotingKeyLinkTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -15962,7 +15962,7 @@ impl VrfKeyLinkTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -16330,7 +16330,7 @@ impl EmbeddedVrfKeyLinkTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -16746,7 +16746,7 @@ impl HashLockTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -17136,7 +17136,7 @@ impl EmbeddedHashLockTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -17653,7 +17653,7 @@ impl SecretLockTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -18087,7 +18087,7 @@ impl EmbeddedSecretLockTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -18566,7 +18566,7 @@ impl SecretProofTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -19021,7 +19021,7 @@ impl EmbeddedSecretProofTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -19517,7 +19517,7 @@ impl AccountMetadataTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -19984,7 +19984,7 @@ impl EmbeddedAccountMetadataTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -20496,7 +20496,7 @@ impl MosaicMetadataTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -20985,7 +20985,7 @@ impl EmbeddedMosaicMetadataTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -21502,7 +21502,7 @@ impl NamespaceMetadataTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -21991,7 +21991,7 @@ impl EmbeddedNamespaceMetadataTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -22704,7 +22704,7 @@ impl MosaicDefinitionTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -23144,7 +23144,7 @@ impl EmbeddedMosaicDefinitionTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -23571,7 +23571,7 @@ impl MosaicSupplyChangeTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -23961,7 +23961,7 @@ impl EmbeddedMosaicSupplyChangeTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -24361,7 +24361,7 @@ impl MosaicSupplyRevocationTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -24729,7 +24729,7 @@ impl EmbeddedMosaicSupplyRevocationTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -25252,7 +25252,7 @@ impl MultisigAccountModificationTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -25791,7 +25791,7 @@ impl EmbeddedMultisigAccountModificationTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -26248,7 +26248,7 @@ impl AddressAliasTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -26638,7 +26638,7 @@ impl EmbeddedAddressAliasTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -27056,7 +27056,7 @@ impl MosaicAliasTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -27446,7 +27446,7 @@ impl EmbeddedMosaicAliasTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -27937,7 +27937,7 @@ impl NamespaceRegistrationTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -28420,7 +28420,7 @@ impl EmbeddedNamespaceRegistrationTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -29076,7 +29076,7 @@ impl AccountAddressRestrictionTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -29581,7 +29581,7 @@ impl EmbeddedAccountAddressRestrictionTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -30113,7 +30113,7 @@ impl AccountMosaicRestrictionTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -30618,7 +30618,7 @@ impl EmbeddedAccountMosaicRestrictionTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -31150,7 +31150,7 @@ impl AccountOperationRestrictionTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -31655,7 +31655,7 @@ impl EmbeddedAccountOperationRestrictionTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -32158,7 +32158,7 @@ impl MosaicAddressRestrictionTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -32610,7 +32610,7 @@ impl EmbeddedMosaicAddressRestrictionTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -33246,7 +33246,7 @@ impl MosaicGlobalRestrictionTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -33742,7 +33742,7 @@ impl EmbeddedMosaicGlobalRestrictionTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -34283,7 +34283,7 @@ impl TransferTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -34821,7 +34821,7 @@ impl EmbeddedTransferTransactionV1 {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,

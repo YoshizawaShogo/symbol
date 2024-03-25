@@ -2,7 +2,6 @@
 
 from pathlib import Path
 import json
-import copy
 
 import catparser
 from catparser.DisplayType import DisplayType
@@ -24,12 +23,12 @@ def generate_files(ast_models, output_path: Path):
     type_dict = get_type_dict(ast_models)
     # ast_model_dict = get_ast_model_dict(ast_models)
     
-    output = '#[cfg(not(feature = "private_network"))] mod symbol_models_test {use std::str::FromStr; use symbol::symbol::prelude::*;'
+    output = '#[cfg(not(feature = "private_network"))] mod symbol_models_test {use hex::decode; use std::str::FromStr; use symbol::symbol::prelude::*;'
     
     # transaction
     with open("../../tests/vectors/symbol/models/transactions.json") as f:
         json_data =  json.load(f)
-    
+        
     for test in json_data:
         output += parse_test(test, type_dict, ast_models)
 
@@ -45,30 +44,41 @@ def get_type_dict(ast_models):
     
     return type_dict
 
-def search_ast_model(ast_model_name, ast_models):
-    print("\n%%IN?", ast_model_name, [f.name for f in ast_models])
+def find_ast_model(ast_model_name, ast_models):
     index = [f.name for f in ast_models].index(ast_model_name)
     astmodel = ast_models[index]
     return astmodel
 
+def generate_publickey(privatekey):
+    from nacl.signing import SigningKey
+    import nacl.utils
+    private_key = SigningKey(bytes.fromhex(privatekey))
+    return private_key.verify_key.encode(encoder=nacl.encoding.HexEncoder).decode('utf-8').upper()
+
+payload = ''
 def parse_test(json_data_of_test, type_dict, ast_models):
     # -> test一つ分丸ごと
     test = json_data_of_test
+    global payload
+    payload = json_data_of_test["payload"]
     
     # header
     ret = ''
     ret += constant.TEST_FUNC_HEADER
     ret += f'fn {test["test_name"]}() {{'
     
-    
-    print("#", test["test_name"])
     # exe
-    struct = search_ast_model(test["schema_name"], ast_models)
+    struct = find_ast_model(test["schema_name"], ast_models)
+    ret += '\n\n// Serialize Test\n'
     ret += "let tx = "
     ret += parse_struct_rhs(struct, test["descriptor"], type_dict)
     ret += ";"
+    ret += f'let payload = decode("{payload}").unwrap();'
+    ret += "assert_eq!(payload, tx.serialize());"
     
     # footer
+    ret += '\n\n// Deserialize Test\n'
+    ret += f'let _ = {test["schema_name"]}::deserialize(&payload).unwrap().0;'
     ret += '}'
     return ret
 
@@ -82,7 +92,7 @@ def parse_struct_rhs(ast_model_of_struct, json_of_struct: list, type_dict):
         if variable == 'type':
             continue
         
-        field_ast_model = search_ast_model(variable, ast_model_of_struct.fields)
+        field_ast_model = find_ast_model(variable, ast_model_of_struct.fields)
         field_type = field_ast_model.field_type
         # if field_type == "PublicKey" or field_type == "Signature":
         
@@ -97,11 +107,11 @@ def parse_struct_rhs(ast_model_of_struct, json_of_struct: list, type_dict):
             if diplay_type == DisplayType.STRUCT:
                 ret += parse_struct_rhs(ast_model, value, type_dict)
             elif diplay_type == DisplayType.ENUM:
-                ret += parse_enum_rhs(ast_model, value, type_dict)
+                ret += parse_enum_rhs(ast_model, value)
             elif diplay_type == DisplayType.BYTE_ARRAY:
-                ret += parse_byte_array_rhs(ast_model, value, type_dict)
+                ret += parse_byte_array_rhs(ast_model, value)
             elif diplay_type == DisplayType.INTEGER:
-                ret += parse_integer_rhs(ast_model, value, type_dict)
+                ret += parse_integer_rhs(ast_model, value)
             else:
                 exit("unexpected")
         ret += ";"
@@ -111,9 +121,9 @@ def parse_struct_rhs(ast_model_of_struct, json_of_struct: list, type_dict):
 
 def parse_primitive_integer_rhs(value):
     return f'{value}'
-def parse_integer_rhs(ast_model_of_integer, value, type_dict):
+def parse_integer_rhs(ast_model_of_integer, value):
     return f'{ast_model_of_integer.name}({value})'
-def parse_enum_rhs(ast_model_of_enum, value, type_dict):
+def parse_enum_rhs(ast_model_of_enum, value):
     enum_type = ast_model_of_enum.name
     value = value.upper()
     ret = ''
@@ -125,7 +135,13 @@ def parse_enum_rhs(ast_model_of_enum, value, type_dict):
     else:
         ret += f'{enum_type}::{value}'
     return ret
-def parse_byte_array_rhs(ast_model_of_byte_array, value, type_dict):
+def parse_byte_array_rhs(ast_model_of_byte_array, value):
+    if "PublicKey" in ast_model_of_byte_array.name:
+        old_publickey = str(value)
+        new_publickey = generate_publickey(old_publickey)
+        global payload
+        payload = payload.replace(old_publickey, new_publickey)
+        value = new_publickey
     return f'{ast_model_of_byte_array.name}::from_str("{value}").unwrap()'
 def parse_vec_rhs(element_type, value, type_dict):
     if str(element_type) in "uint8":
@@ -136,10 +152,7 @@ def parse_vec_rhs(element_type, value, type_dict):
     ret = '{'
     ret += 'let mut tmp_vec = Vec::new();'
     values = value
-    print("\nvalues", values)
     for value in values:
-        print("\nvalues", values)
-        print("\nvalue", value)
         ret += 'tmp_vec.push('
         if diplay_type == DisplayType.STRUCT:
             if element_type == "EmbeddedTransaction":
@@ -148,14 +161,13 @@ def parse_vec_rhs(element_type, value, type_dict):
                 ret += parse_struct_rhs(embedded_ast_model, value, type_dict)
                 ret += ".into()"
             else:
-                print("\nAA", element_type, ast_model.name, value)
                 ret += parse_struct_rhs(ast_model, value, type_dict)
         elif diplay_type == DisplayType.ENUM:
-            ret += parse_enum_rhs(ast_model, value, type_dict)
+            ret += parse_enum_rhs(ast_model, value)
         elif diplay_type == DisplayType.BYTE_ARRAY:
-            ret += parse_byte_array_rhs(ast_model, value, type_dict)
+            ret += parse_byte_array_rhs(ast_model, value)
         elif diplay_type == DisplayType.INTEGER:
-            ret += parse_integer_rhs(ast_model, value, type_dict)
+            ret += parse_integer_rhs(ast_model, value)
         else:
             exit("unexpected")
         ret += ');'

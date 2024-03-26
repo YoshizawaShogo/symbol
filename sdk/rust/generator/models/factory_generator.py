@@ -45,7 +45,7 @@ def generate_factory(factory, products):
                 ftes = fte.size
                 # ften = fte.name
                 ret += f'let mut bytes = [0u8; {ftes}];'
-                ret += f'bytes.copy_from_slice(payload);'
+                ret += f'bytes.copy_from_slice(&payload[..{ftes}]);'
                 ret += f'let element = {fte}::from_le_bytes(bytes);'
                 ret += f'payload = &payload[{ftes}..];'
                 ret += f'{fn}.push(element);'
@@ -102,7 +102,7 @@ def generate_factory(factory, products):
                     ftes = fte.size
                     # ften = fte.name
                     ret += f'let mut bytes = [0u8; {ftes}];'
-                    ret += f'bytes.copy_from_slice(payload);'
+                    ret += f'bytes.copy_from_slice(&payload[..{ftes}]);'
                     ret += f'let element = {fte}::from_le_bytes(bytes);'
                     ret += f'payload = &payload[{ftes}..];'
                     ret += f'{fn}.push(element);'

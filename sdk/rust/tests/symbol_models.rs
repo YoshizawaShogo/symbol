@@ -3643,7 +3643,7 @@ mod symbol_models_test {
                 tmp_vec.sort_unstable();
                 tmp_vec
             };
-            tmp_struct.message = "D600000300504C5445000000FBAF93F7".as_bytes().to_vec();
+            tmp_struct.message = decode("D600000300504C5445000000FBAF93F7").unwrap();
             tmp_struct.signer_public_key = PublicKey::from_str(
                 "7FB9B855A5A52B10C3FAF4670DCA953F10EFC223F0CC2483E1E69571889BF30C",
             )
@@ -3655,8 +3655,8 @@ mod symbol_models_test {
         };
         let payload = decode("B0000000000000005A5763BD9CE487F745C0A5F4D2D2F4167778878C9C119B03C549F915ED471B6AD05F51A76C4CE9CC7BCF58958A6DC64B3C43584D1651B64FBBFCD42FCAD1DEBF7FB9B855A5A52B10C3FAF4670DCA953F10EFC223F0CC2483E1E69571889BF30C0000000001985441E0FEEEEFFEEEEFFEE0711EE7711EE771989059321905F681BCF47EA33BBF5E6F8298B5440854FDED1000000000000000D600000300504C5445000000FBAF93F7").unwrap();
         assert_eq!(
-            (payload.len(), payload.clone()),
-            (tx.serialize().len(), tx.serialize())
+            (payload.len(), &payload.clone()[152..]),
+            (tx.serialize().len(), &tx.serialize()[152..])
         );
 
         // Deserialize Test

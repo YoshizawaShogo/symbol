@@ -1737,7 +1737,7 @@ impl Transaction {
                 let mut proof = Vec::new();
                 for _ in 0..proof_size {
                     let mut bytes = [0u8; 1];
-                    bytes.copy_from_slice(payload);
+                    bytes.copy_from_slice(&payload[..1]);
                     let element = u8::from_le_bytes(bytes);
                     payload = &payload[1..];
                     proof.push(element);
@@ -1770,7 +1770,7 @@ impl Transaction {
                 let mut value = Vec::new();
                 for _ in 0..value_size {
                     let mut bytes = [0u8; 1];
-                    bytes.copy_from_slice(payload);
+                    bytes.copy_from_slice(&payload[..1]);
                     let element = u8::from_le_bytes(bytes);
                     payload = &payload[1..];
                     value.push(element);
@@ -1805,7 +1805,7 @@ impl Transaction {
                 let mut value = Vec::new();
                 for _ in 0..value_size {
                     let mut bytes = [0u8; 1];
-                    bytes.copy_from_slice(payload);
+                    bytes.copy_from_slice(&payload[..1]);
                     let element = u8::from_le_bytes(bytes);
                     payload = &payload[1..];
                     value.push(element);
@@ -1841,7 +1841,7 @@ impl Transaction {
                 let mut value = Vec::new();
                 for _ in 0..value_size {
                     let mut bytes = [0u8; 1];
-                    bytes.copy_from_slice(payload);
+                    bytes.copy_from_slice(&payload[..1]);
                     let element = u8::from_le_bytes(bytes);
                     payload = &payload[1..];
                     value.push(element);
@@ -2038,7 +2038,7 @@ impl Transaction {
                 let mut name = Vec::new();
                 for _ in 0..name_size {
                     let mut bytes = [0u8; 1];
-                    bytes.copy_from_slice(payload);
+                    bytes.copy_from_slice(&payload[..1]);
                     let element = u8::from_le_bytes(bytes);
                     payload = &payload[1..];
                     name.push(element);
@@ -2283,7 +2283,7 @@ impl Transaction {
                 let mut message = Vec::new();
                 for _ in 0..message_size {
                     let mut bytes = [0u8; 1];
-                    bytes.copy_from_slice(payload);
+                    bytes.copy_from_slice(&payload[..1]);
                     let element = u8::from_le_bytes(bytes);
                     payload = &payload[1..];
                     message.push(element);
@@ -2856,7 +2856,7 @@ impl EmbeddedTransaction {
                 let mut proof = Vec::new();
                 for _ in 0..proof_size {
                     let mut bytes = [0u8; 1];
-                    bytes.copy_from_slice(payload);
+                    bytes.copy_from_slice(&payload[..1]);
                     let element = u8::from_le_bytes(bytes);
                     payload = &payload[1..];
                     proof.push(element);
@@ -2886,7 +2886,7 @@ impl EmbeddedTransaction {
                 let mut value = Vec::new();
                 for _ in 0..value_size {
                     let mut bytes = [0u8; 1];
-                    bytes.copy_from_slice(payload);
+                    bytes.copy_from_slice(&payload[..1]);
                     let element = u8::from_le_bytes(bytes);
                     payload = &payload[1..];
                     value.push(element);
@@ -2918,7 +2918,7 @@ impl EmbeddedTransaction {
                 let mut value = Vec::new();
                 for _ in 0..value_size {
                     let mut bytes = [0u8; 1];
-                    bytes.copy_from_slice(payload);
+                    bytes.copy_from_slice(&payload[..1]);
                     let element = u8::from_le_bytes(bytes);
                     payload = &payload[1..];
                     value.push(element);
@@ -2951,7 +2951,7 @@ impl EmbeddedTransaction {
                 let mut value = Vec::new();
                 for _ in 0..value_size {
                     let mut bytes = [0u8; 1];
-                    bytes.copy_from_slice(payload);
+                    bytes.copy_from_slice(&payload[..1]);
                     let element = u8::from_le_bytes(bytes);
                     payload = &payload[1..];
                     value.push(element);
@@ -3133,7 +3133,7 @@ impl EmbeddedTransaction {
                 let mut name = Vec::new();
                 for _ in 0..name_size {
                     let mut bytes = [0u8; 1];
-                    bytes.copy_from_slice(payload);
+                    bytes.copy_from_slice(&payload[..1]);
                     let element = u8::from_le_bytes(bytes);
                     payload = &payload[1..];
                     name.push(element);
@@ -3375,7 +3375,7 @@ impl EmbeddedTransaction {
                 let mut message = Vec::new();
                 for _ in 0..message_size {
                     let mut bytes = [0u8; 1];
-                    bytes.copy_from_slice(payload);
+                    bytes.copy_from_slice(&payload[..1]);
                     let element = u8::from_le_bytes(bytes);
                     payload = &payload[1..];
                     message.push(element);
@@ -18748,7 +18748,7 @@ impl SecretProofTransactionV1 {
         let tmp_payload_len = payload.len();
         while tmp_payload_len - payload.len() < proof_size as usize {
             let mut bytes = [0u8; 1];
-            bytes.copy_from_slice(payload);
+            bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
             payload = &payload[1..];
             proof.push(element);
@@ -19201,7 +19201,7 @@ impl EmbeddedSecretProofTransactionV1 {
         let tmp_payload_len = payload.len();
         while tmp_payload_len - payload.len() < proof_size as usize {
             let mut bytes = [0u8; 1];
-            bytes.copy_from_slice(payload);
+            bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
             payload = &payload[1..];
             proof.push(element);
@@ -19707,7 +19707,7 @@ impl AccountMetadataTransactionV1 {
         let tmp_payload_len = payload.len();
         while tmp_payload_len - payload.len() < value_size as usize {
             let mut bytes = [0u8; 1];
-            bytes.copy_from_slice(payload);
+            bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
             payload = &payload[1..];
             value.push(element);
@@ -20172,7 +20172,7 @@ impl EmbeddedAccountMetadataTransactionV1 {
         let tmp_payload_len = payload.len();
         while tmp_payload_len - payload.len() < value_size as usize {
             let mut bytes = [0u8; 1];
-            bytes.copy_from_slice(payload);
+            bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
             payload = &payload[1..];
             value.push(element);
@@ -20696,7 +20696,7 @@ impl MosaicMetadataTransactionV1 {
         let tmp_payload_len = payload.len();
         while tmp_payload_len - payload.len() < value_size as usize {
             let mut bytes = [0u8; 1];
-            bytes.copy_from_slice(payload);
+            bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
             payload = &payload[1..];
             value.push(element);
@@ -21183,7 +21183,7 @@ impl EmbeddedMosaicMetadataTransactionV1 {
         let tmp_payload_len = payload.len();
         while tmp_payload_len - payload.len() < value_size as usize {
             let mut bytes = [0u8; 1];
-            bytes.copy_from_slice(payload);
+            bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
             payload = &payload[1..];
             value.push(element);
@@ -21710,7 +21710,7 @@ impl NamespaceMetadataTransactionV1 {
         let tmp_payload_len = payload.len();
         while tmp_payload_len - payload.len() < value_size as usize {
             let mut bytes = [0u8; 1];
-            bytes.copy_from_slice(payload);
+            bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
             payload = &payload[1..];
             value.push(element);
@@ -22197,7 +22197,7 @@ impl EmbeddedNamespaceMetadataTransactionV1 {
         let tmp_payload_len = payload.len();
         while tmp_payload_len - payload.len() < value_size as usize {
             let mut bytes = [0u8; 1];
-            bytes.copy_from_slice(payload);
+            bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
             payload = &payload[1..];
             value.push(element);
@@ -28186,7 +28186,7 @@ impl NamespaceRegistrationTransactionV1 {
         let tmp_payload_len = payload.len();
         while tmp_payload_len - payload.len() < name_size as usize {
             let mut bytes = [0u8; 1];
-            bytes.copy_from_slice(payload);
+            bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
             payload = &payload[1..];
             name.push(element);
@@ -28667,7 +28667,7 @@ impl EmbeddedNamespaceRegistrationTransactionV1 {
         let tmp_payload_len = payload.len();
         while tmp_payload_len - payload.len() < name_size as usize {
             let mut bytes = [0u8; 1];
-            bytes.copy_from_slice(payload);
+            bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
             payload = &payload[1..];
             name.push(element);
@@ -34603,7 +34603,7 @@ impl TransferTransactionV1 {
         let tmp_payload_len = payload.len();
         while tmp_payload_len - payload.len() < message_size as usize {
             let mut bytes = [0u8; 1];
-            bytes.copy_from_slice(payload);
+            bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
             payload = &payload[1..];
             message.push(element);
@@ -35141,7 +35141,7 @@ impl EmbeddedTransferTransactionV1 {
         let tmp_payload_len = payload.len();
         while tmp_payload_len - payload.len() < message_size as usize {
             let mut bytes = [0u8; 1];
-            bytes.copy_from_slice(payload);
+            bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
             payload = &payload[1..];
             message.push(element);

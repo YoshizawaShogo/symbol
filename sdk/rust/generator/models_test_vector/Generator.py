@@ -148,9 +148,21 @@ def parse_byte_array_rhs(ast_model_of_byte_array, value):
         payload = payload.replace(old_publickey, new_publickey)
         value = new_publickey
     return f'{ast_model_of_byte_array.name}::from_str("{value}").unwrap()'
+
+def can_hex_decode(str):
+    if len(str) % 2 == 1:
+        return False
+    for char in str.upper():
+        if char not in '0123456789ABCDEF':
+            return False
+    return True
+
 def parse_vec_rhs(element_type, value, type_dict):
     if str(element_type) in "uint8":
-        return f'"{value}".as_bytes().to_vec()'
+        if can_hex_decode(value):
+            return f'decode("{value}").unwrap()'
+        else:
+            return f'"{value}".as_bytes().to_vec()'
 
     ast_model = type_dict[element_type]
     diplay_type = ast_model.display_type

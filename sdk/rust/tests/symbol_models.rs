@@ -426,7 +426,7 @@ mod symbol_models_test {
                 UnresolvedAddress::from_str("TBA6LOHEA6A465G2X5MSQF66JBYR254GJDPK7MQ").unwrap();
             tmp_struct.scoped_metadata_key = 10;
             tmp_struct.value_size_delta = 10;
-            tmp_struct.value = "313233424143".as_bytes().to_vec();
+            tmp_struct.value = decode("313233424143").unwrap();
             tmp_struct.signer_public_key = PublicKey::from_str(
                 "662F615041C51B4605AE4A16C74416141548EDDCE012D083172921C42E80ACB2",
             )
@@ -459,7 +459,7 @@ mod symbol_models_test {
                 UnresolvedAddress::from_str("TBA6LOHEA6A465G2X5MSQF66JBYR254GJDPK7MQ").unwrap();
             tmp_struct.scoped_metadata_key = 11258607;
             tmp_struct.value_size_delta = -6;
-            tmp_struct.value = "313233424143".as_bytes().to_vec();
+            tmp_struct.value = decode("313233424143").unwrap();
             tmp_struct.signer_public_key = PublicKey::from_str(
                 "C9BAC0EAA76473E39107081F6A9094771ED2F616E98E53ABD30339DF422C4984",
             )
@@ -500,7 +500,7 @@ mod symbol_models_test {
                                 .unwrap();
                         tmp_struct.scoped_metadata_key = 10;
                         tmp_struct.value_size_delta = 10;
-                        tmp_struct.value = "313233424143".as_bytes().to_vec();
+                        tmp_struct.value = decode("313233424143").unwrap();
                         tmp_struct
                     }
                     .into(),
@@ -555,7 +555,7 @@ mod symbol_models_test {
                                 .unwrap();
                         tmp_struct.scoped_metadata_key = 11258607;
                         tmp_struct.value_size_delta = -6;
-                        tmp_struct.value = "313233424143".as_bytes().to_vec();
+                        tmp_struct.value = decode("313233424143").unwrap();
                         tmp_struct
                     }
                     .into(),
@@ -1367,7 +1367,7 @@ mod symbol_models_test {
                             tmp_vec.sort_unstable();
                             tmp_vec
                         };
-                        tmp_struct.message = "D600000300504C5445000000FBAF93F7".as_bytes().to_vec();
+                        tmp_struct.message = decode("D600000300504C5445000000FBAF93F7").unwrap();
                         tmp_struct
                     }
                     .into(),
@@ -1458,7 +1458,7 @@ mod symbol_models_test {
                             tmp_vec.sort_unstable();
                             tmp_vec
                         };
-                        tmp_struct.message = "D600000300504C5445000000FBAF93F7".as_bytes().to_vec();
+                        tmp_struct.message = decode("D600000300504C5445000000FBAF93F7").unwrap();
                         tmp_struct
                     }
                     .into(),
@@ -2298,7 +2298,7 @@ mod symbol_models_test {
             tmp_struct.scoped_metadata_key = 10;
             tmp_struct.target_mosaic_id = UnresolvedMosaicId(1000);
             tmp_struct.value_size_delta = 10;
-            tmp_struct.value = "313233414243".as_bytes().to_vec();
+            tmp_struct.value = decode("313233414243").unwrap();
             tmp_struct.signer_public_key = PublicKey::from_str(
                 "6693FC8E692C0848B0D0B0FAA89BE9D87FD6CB071642503A8F924F2A1255CD87",
             )
@@ -2332,7 +2332,7 @@ mod symbol_models_test {
             tmp_struct.scoped_metadata_key = 10;
             tmp_struct.target_mosaic_id = UnresolvedMosaicId(1000);
             tmp_struct.value_size_delta = -5;
-            tmp_struct.value = "313233414243".as_bytes().to_vec();
+            tmp_struct.value = decode("313233414243").unwrap();
             tmp_struct.signer_public_key = PublicKey::from_str(
                 "ED1B9F006AFCAB3998EB0CE66E7D38D5F274097C8AC646CD08FD3DA5E81AAC8C",
             )
@@ -2374,7 +2374,7 @@ mod symbol_models_test {
                         tmp_struct.scoped_metadata_key = 10;
                         tmp_struct.target_mosaic_id = UnresolvedMosaicId(1000);
                         tmp_struct.value_size_delta = 10;
-                        tmp_struct.value = "313233414243".as_bytes().to_vec();
+                        tmp_struct.value = decode("313233414243").unwrap();
                         tmp_struct
                     }
                     .into(),
@@ -2430,7 +2430,7 @@ mod symbol_models_test {
                         tmp_struct.scoped_metadata_key = 10;
                         tmp_struct.target_mosaic_id = UnresolvedMosaicId(1000);
                         tmp_struct.value_size_delta = -5;
-                        tmp_struct.value = "313233414243".as_bytes().to_vec();
+                        tmp_struct.value = decode("313233414243").unwrap();
                         tmp_struct
                     }
                     .into(),
@@ -2769,7 +2769,7 @@ mod symbol_models_test {
             tmp_struct.scoped_metadata_key = 10;
             tmp_struct.target_namespace_id = NamespaceId(1000);
             tmp_struct.value_size_delta = 10;
-            tmp_struct.value = "ABC123".as_bytes().to_vec();
+            tmp_struct.value = decode("ABC123").unwrap();
             tmp_struct.signer_public_key = PublicKey::from_str(
                 "32AA3E853021087C2DB1349483FED1C1A729A7F41B0BE84905D9E0463EEEC417",
             )
@@ -2803,7 +2803,7 @@ mod symbol_models_test {
             tmp_struct.scoped_metadata_key = 10;
             tmp_struct.target_namespace_id = NamespaceId(1000);
             tmp_struct.value_size_delta = -3;
-            tmp_struct.value = "ABC123".as_bytes().to_vec();
+            tmp_struct.value = decode("ABC123").unwrap();
             tmp_struct.signer_public_key = PublicKey::from_str(
                 "81C75ECF85231AA30DA72890D10825A7BB419044FE959DD13C9CDE850D9D43DC",
             )
@@ -2845,7 +2845,7 @@ mod symbol_models_test {
                         tmp_struct.scoped_metadata_key = 10;
                         tmp_struct.target_namespace_id = NamespaceId(1000);
                         tmp_struct.value_size_delta = 10;
-                        tmp_struct.value = "ABC123".as_bytes().to_vec();
+                        tmp_struct.value = decode("ABC123").unwrap();
                         tmp_struct
                     }
                     .into(),
@@ -2901,7 +2901,7 @@ mod symbol_models_test {
                         tmp_struct.scoped_metadata_key = 10;
                         tmp_struct.target_namespace_id = NamespaceId(1000);
                         tmp_struct.value_size_delta = -3;
-                        tmp_struct.value = "ABC123".as_bytes().to_vec();
+                        tmp_struct.value = decode("ABC123").unwrap();
                         tmp_struct
                     }
                     .into(),
@@ -3416,7 +3416,7 @@ mod symbol_models_test {
             )
             .unwrap();
             tmp_struct.hash_algorithm = LockHashAlgorithm::SHA3_256;
-            tmp_struct.proof = "9A493664".as_bytes().to_vec();
+            tmp_struct.proof = decode("9A493664").unwrap();
             tmp_struct.signer_public_key = PublicKey::from_str(
                 "E2E9B5CF15554F11A98A250167E936F731865F3318B41E9B18753BFE31A8E4D6",
             )
@@ -3458,7 +3458,7 @@ mod symbol_models_test {
                         )
                         .unwrap();
                         tmp_struct.hash_algorithm = LockHashAlgorithm::SHA3_256;
-                        tmp_struct.proof = "9A493664".as_bytes().to_vec();
+                        tmp_struct.proof = decode("9A493664").unwrap();
                         tmp_struct
                     }
                     .into(),
@@ -3655,8 +3655,8 @@ mod symbol_models_test {
         };
         let payload = decode("B0000000000000005A5763BD9CE487F745C0A5F4D2D2F4167778878C9C119B03C549F915ED471B6AD05F51A76C4CE9CC7BCF58958A6DC64B3C43584D1651B64FBBFCD42FCAD1DEBF7FB9B855A5A52B10C3FAF4670DCA953F10EFC223F0CC2483E1E69571889BF30C0000000001985441E0FEEEEFFEEEEFFEE0711EE7711EE771989059321905F681BCF47EA33BBF5E6F8298B5440854FDED1000000000000000D600000300504C5445000000FBAF93F7").unwrap();
         assert_eq!(
-            (payload.len(), &payload.clone()[152..]),
-            (tx.serialize().len(), &tx.serialize()[152..])
+            (payload.len(), payload.clone()),
+            (tx.serialize().len(), tx.serialize())
         );
 
         // Deserialize Test
@@ -4029,7 +4029,7 @@ mod symbol_models_test {
                             tmp_vec.sort_unstable();
                             tmp_vec
                         };
-                        tmp_struct.message = "D600000300504C5445000000FBAF93F7".as_bytes().to_vec();
+                        tmp_struct.message = decode("D600000300504C5445000000FBAF93F7").unwrap();
                         tmp_struct
                     }
                     .into(),

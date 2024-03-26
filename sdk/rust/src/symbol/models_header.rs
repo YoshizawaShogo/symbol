@@ -52,6 +52,7 @@ impl From<crypto_common::InvalidLength> for SymbolError {
 pub use ed25519_dalek::Signature;
 pub use ed25519_dalek::SigningKey as PrivateKey;
 pub use ed25519_dalek::VerifyingKey as PublicKey;
+pub type VotingPublicKey = PublicKey;
 
 pub trait ModelsSignature
 where

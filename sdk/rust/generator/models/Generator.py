@@ -39,7 +39,7 @@ def generate_files(ast_models, output_directory: Path):
         factory_types = util.get_factory_types(ast_models)
 
         for ast_model in ast_models:
-            if ast_model.name in ('Signature', 'PublicKey'):
+            if ast_model.name in ('Signature', 'PublicKey', 'VotingPublicKey'):
                 continue
             
             ast_model = copy.deepcopy(ast_model)

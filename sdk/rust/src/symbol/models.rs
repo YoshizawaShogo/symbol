@@ -658,43 +658,6 @@ impl Hash512 {
         self.0.to_vec()
     }
 }
-///A PublicKey used for voting during the [finalization process](/concepts/block.html#finalization).
-//name: VotingPublicKey
-//linked_type: <class 'catparser.ast.FixedSizeBuffer'>
-//    size: 32
-//    is_unsigned: True
-//    display_type: DisplayType.BYTE_ARRAY
-//    *name: binary_fixed(32)
-//*is_unsigned: True
-//*size: 32
-#[derive(Debug, Clone, PartialEq, Eq)]
-// generated from generate_bytearray()
-pub struct VotingPublicKey(pub [u8; 32]);
-impl VotingPublicKey {
-    pub const SIZE: usize = 32;
-    pub fn new(votingpublickey: [u8; 32]) -> Self {
-        Self(votingpublickey)
-    }
-    pub fn default() -> Self {
-        Self([0; 32])
-    }
-    pub fn size(&self) -> usize {
-        Self::SIZE
-    }
-    pub fn deserialize(payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
-        if payload.len() < Self::SIZE {
-            return Err(SymbolError::SizeError {
-                expect: vec![Self::SIZE],
-                real: payload.len(),
-            });
-        }
-        let (bytes, rest) = payload.split_at(Self::SIZE);
-        Ok((Self(bytes.try_into()?), rest))
-    }
-    pub fn serialize(&self) -> Vec<u8> {
-        self.0.to_vec()
-    }
-}
 ///A quantity of a certain mosaic.
 //name: Mosaic
 //disposition: None
@@ -758,6 +721,8 @@ impl Mosaic {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let mosaic_id;
         (mosaic_id, payload) = MosaicId::deserialize(payload)?;
         let amount;
@@ -838,6 +803,8 @@ impl UnresolvedMosaic {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let mosaic_id;
         (mosaic_id, payload) = UnresolvedMosaicId::deserialize(payload)?;
         let amount;
@@ -3815,6 +3782,8 @@ impl VrfProof {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let gamma;
         (gamma, payload) = ProofGamma::deserialize(payload)?;
         let verification_hash;
@@ -4861,10 +4830,12 @@ impl NemesisBlockV1 {
         size += 8;
         size += self.total_voting_balance.size();
         size += self.previous_importance_block_hash.size();
-        size += 0;
+        size += (self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7;
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -4932,10 +4903,13 @@ impl NemesisBlockV1 {
         let previous_importance_block_hash;
         (previous_importance_block_hash, payload) = Hash256::deserialize(payload)?;
         let mut transactions = Vec::new();
-        for _ in 0..0 {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while initial_payload_len - payload.len() < size as usize {
             let element;
             (element, payload) = Transaction::deserialize(payload)?;
             transactions.push(element);
+            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
         }
         let self_ = Self {
             signature,
@@ -4983,11 +4957,13 @@ impl NemesisBlockV1 {
             self.harvesting_eligible_accounts_count.to_le_bytes();
         let total_voting_balance = self.total_voting_balance.serialize();
         let previous_importance_block_hash = self.previous_importance_block_hash.serialize();
-        let transactions: Vec<u8> = self
+        let mut transactions: Vec<u8> = self
             .transactions
             .iter()
             .flat_map(|x| x.serialize())
             .collect();
+        let transactions_tmp_size = transactions.len();
+        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
         [
             size.iter(),
             verifiable_entity_header_reserved_1.iter(),
@@ -5496,10 +5472,12 @@ impl NormalBlockV1 {
         size += self.beneficiary_address.size();
         size += self.fee_multiplier.size();
         size += 4;
-        size += 0;
+        size += (self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7;
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -5566,10 +5544,13 @@ impl NormalBlockV1 {
             ));
         }
         let mut transactions = Vec::new();
-        for _ in 0..0 {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while initial_payload_len - payload.len() < size as usize {
             let element;
             (element, payload) = Transaction::deserialize(payload)?;
             transactions.push(element);
+            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
         }
         let self_ = Self {
             signature,
@@ -5609,11 +5590,13 @@ impl NormalBlockV1 {
         let beneficiary_address = self.beneficiary_address.serialize();
         let fee_multiplier = self.fee_multiplier.serialize();
         let block_header_reserved_1 = 0u32.to_le_bytes();
-        let transactions: Vec<u8> = self
+        let mut transactions: Vec<u8> = self
             .transactions
             .iter()
             .flat_map(|x| x.serialize())
             .collect();
+        let transactions_tmp_size = transactions.len();
+        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
         [
             size.iter(),
             verifiable_entity_header_reserved_1.iter(),
@@ -6180,10 +6163,12 @@ impl ImportanceBlockV1 {
         size += 8;
         size += self.total_voting_balance.size();
         size += self.previous_importance_block_hash.size();
-        size += 0;
+        size += (self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7;
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -6251,10 +6236,13 @@ impl ImportanceBlockV1 {
         let previous_importance_block_hash;
         (previous_importance_block_hash, payload) = Hash256::deserialize(payload)?;
         let mut transactions = Vec::new();
-        for _ in 0..0 {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while initial_payload_len - payload.len() < size as usize {
             let element;
             (element, payload) = Transaction::deserialize(payload)?;
             transactions.push(element);
+            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
         }
         let self_ = Self {
             signature,
@@ -6302,11 +6290,13 @@ impl ImportanceBlockV1 {
             self.harvesting_eligible_accounts_count.to_le_bytes();
         let total_voting_balance = self.total_voting_balance.serialize();
         let previous_importance_block_hash = self.previous_importance_block_hash.serialize();
-        let transactions: Vec<u8> = self
+        let mut transactions: Vec<u8> = self
             .transactions
             .iter()
             .flat_map(|x| x.serialize())
             .collect();
+        let transactions_tmp_size = transactions.len();
+        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
         [
             size.iter(),
             verifiable_entity_header_reserved_1.iter(),
@@ -6417,6 +6407,8 @@ impl FinalizationRound {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let epoch;
         (epoch, payload) = FinalizationEpoch::deserialize(payload)?;
         let point;
@@ -6516,6 +6508,8 @@ impl FinalizedBlockHeader {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let round;
         (round, payload) = FinalizationRound::deserialize(payload)?;
         let height;
@@ -7209,6 +7203,8 @@ impl HarvestFeeReceipt {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -7398,6 +7394,8 @@ impl InflationReceipt {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -7593,6 +7591,8 @@ impl LockHashCreatedFeeReceipt {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -7801,6 +7801,8 @@ impl LockHashCompletedFeeReceipt {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -8009,6 +8011,8 @@ impl LockHashExpiredFeeReceipt {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -8217,6 +8221,8 @@ impl LockSecretCreatedFeeReceipt {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -8425,6 +8431,8 @@ impl LockSecretCompletedFeeReceipt {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -8633,6 +8641,8 @@ impl LockSecretExpiredFeeReceipt {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -8825,6 +8835,8 @@ impl MosaicExpiredReceipt {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -9049,6 +9061,8 @@ impl MosaicRentalFeeReceipt {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -9403,6 +9417,8 @@ impl NamespaceExpiredReceipt {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -9590,6 +9606,8 @@ impl NamespaceDeletedReceipt {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -9814,6 +9832,8 @@ impl NamespaceRentalFeeReceipt {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -9945,6 +9965,8 @@ impl ReceiptSource {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let primary_id = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
         let secondary_id = u32::from_le_bytes(payload[..4].try_into()?);
@@ -10031,6 +10053,8 @@ impl AddressResolutionEntry {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let source;
         (source, payload) = ReceiptSource::deserialize(payload)?;
         let resolved_value;
@@ -10151,12 +10175,16 @@ impl AddressResolutionStatement {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let unresolved;
         (unresolved, payload) = UnresolvedAddress::deserialize(payload)?;
         let resolution_entries_count = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
         let mut resolution_entries = Vec::new();
-        for _ in 0..resolution_entries_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < resolution_entries_count as usize {
             let element;
             (element, payload) = AddressResolutionEntry::deserialize(payload)?;
             resolution_entries.push(element);
@@ -10252,6 +10280,8 @@ impl MosaicResolutionEntry {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let source;
         (source, payload) = ReceiptSource::deserialize(payload)?;
         let resolved_value;
@@ -10372,12 +10402,16 @@ impl MosaicResolutionStatement {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let unresolved;
         (unresolved, payload) = UnresolvedMosaicId::deserialize(payload)?;
         let resolution_entries_count = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
         let mut resolution_entries = Vec::new();
-        for _ in 0..resolution_entries_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < resolution_entries_count as usize {
             let element;
             (element, payload) = MosaicResolutionEntry::deserialize(payload)?;
             resolution_entries.push(element);
@@ -10528,6 +10562,8 @@ impl TransactionStatement {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let primary_id = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
         let secondary_id = u32::from_le_bytes(payload[..4].try_into()?);
@@ -10535,7 +10571,9 @@ impl TransactionStatement {
         let receipt_count = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
         let mut receipts = Vec::new();
-        for _ in 0..receipt_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < receipt_count as usize {
             let element;
             (element, payload) = Receipt::deserialize(payload)?;
             receipts.push(element);
@@ -10743,10 +10781,14 @@ impl BlockStatement {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let transaction_statement_count = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
         let mut transaction_statements = Vec::new();
-        for _ in 0..transaction_statement_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < transaction_statement_count as usize {
             let element;
             (element, payload) = TransactionStatement::deserialize(payload)?;
             transaction_statements.push(element);
@@ -10754,7 +10796,9 @@ impl BlockStatement {
         let address_resolution_statement_count = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
         let mut address_resolution_statements = Vec::new();
-        for _ in 0..address_resolution_statement_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < address_resolution_statement_count as usize {
             let element;
             (element, payload) = AddressResolutionStatement::deserialize(payload)?;
             address_resolution_statements.push(element);
@@ -10762,7 +10806,9 @@ impl BlockStatement {
         let mosaic_resolution_statement_count = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
         let mut mosaic_resolution_statements = Vec::new();
-        for _ in 0..mosaic_resolution_statement_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < mosaic_resolution_statement_count as usize {
             let element;
             (element, payload) = MosaicResolutionStatement::deserialize(payload)?;
             mosaic_resolution_statements.push(element);
@@ -11122,6 +11168,8 @@ impl AccountKeyLinkTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -11490,6 +11538,8 @@ impl EmbeddedAccountKeyLinkTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -11886,6 +11936,8 @@ impl NodeKeyLinkTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -12254,6 +12306,8 @@ impl EmbeddedNodeKeyLinkTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -12430,6 +12484,8 @@ impl Cosignature {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let version = u64::from_le_bytes(payload[..8].try_into()?);
         payload = &payload[8..];
         let signer_public_key;
@@ -12584,6 +12640,8 @@ impl DetachedCosignature {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         let version = u64::from_le_bytes(payload[..8].try_into()?);
         payload = &payload[8..];
         let signer_public_key;
@@ -13025,11 +13083,13 @@ impl AggregateCompleteTransactionV1 {
         size += self.transactions_hash.size();
         size += 4;
         size += 4;
-        size += self.transactions.iter().map(|x| x.size()).sum::<usize>();
-        size += 0;
+        size += (self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7;
+        size += self.cosignatures.iter().map(|x| x.size()).sum::<usize>();
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -13084,13 +13144,18 @@ impl AggregateCompleteTransactionV1 {
             ));
         }
         let mut transactions = Vec::new();
-        for _ in 0..payload_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < payload_size as usize {
             let element;
             (element, payload) = EmbeddedTransaction::deserialize(payload)?;
             transactions.push(element);
+            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
         }
         let mut cosignatures = Vec::new();
-        for _ in 0..0 {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while initial_payload_len - payload.len() < size as usize {
             let element;
             (element, payload) = Cosignature::deserialize(payload)?;
             cosignatures.push(element);
@@ -13119,13 +13184,17 @@ impl AggregateCompleteTransactionV1 {
         let fee = self.fee.serialize();
         let deadline = self.deadline.serialize();
         let transactions_hash = self.transactions_hash.serialize();
-        let payload_size = (self.transactions.len() as u32).to_le_bytes();
+        let payload_size = (((self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7)
+            as u32)
+            .to_le_bytes();
         let aggregate_transaction_header_reserved_1 = 0u32.to_le_bytes();
-        let transactions: Vec<u8> = self
+        let mut transactions: Vec<u8> = self
             .transactions
             .iter()
             .flat_map(|x| x.serialize())
             .collect();
+        let transactions_tmp_size = transactions.len();
+        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
         let cosignatures: Vec<u8> = self
             .cosignatures
             .iter()
@@ -13562,11 +13631,13 @@ impl AggregateCompleteTransactionV2 {
         size += self.transactions_hash.size();
         size += 4;
         size += 4;
-        size += self.transactions.iter().map(|x| x.size()).sum::<usize>();
-        size += 0;
+        size += (self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7;
+        size += self.cosignatures.iter().map(|x| x.size()).sum::<usize>();
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -13621,13 +13692,18 @@ impl AggregateCompleteTransactionV2 {
             ));
         }
         let mut transactions = Vec::new();
-        for _ in 0..payload_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < payload_size as usize {
             let element;
             (element, payload) = EmbeddedTransaction::deserialize(payload)?;
             transactions.push(element);
+            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
         }
         let mut cosignatures = Vec::new();
-        for _ in 0..0 {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while initial_payload_len - payload.len() < size as usize {
             let element;
             (element, payload) = Cosignature::deserialize(payload)?;
             cosignatures.push(element);
@@ -13656,13 +13732,17 @@ impl AggregateCompleteTransactionV2 {
         let fee = self.fee.serialize();
         let deadline = self.deadline.serialize();
         let transactions_hash = self.transactions_hash.serialize();
-        let payload_size = (self.transactions.len() as u32).to_le_bytes();
+        let payload_size = (((self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7)
+            as u32)
+            .to_le_bytes();
         let aggregate_transaction_header_reserved_1 = 0u32.to_le_bytes();
-        let transactions: Vec<u8> = self
+        let mut transactions: Vec<u8> = self
             .transactions
             .iter()
             .flat_map(|x| x.serialize())
             .collect();
+        let transactions_tmp_size = transactions.len();
+        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
         let cosignatures: Vec<u8> = self
             .cosignatures
             .iter()
@@ -14101,11 +14181,13 @@ impl AggregateBondedTransactionV1 {
         size += self.transactions_hash.size();
         size += 4;
         size += 4;
-        size += self.transactions.iter().map(|x| x.size()).sum::<usize>();
-        size += 0;
+        size += (self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7;
+        size += self.cosignatures.iter().map(|x| x.size()).sum::<usize>();
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -14160,13 +14242,18 @@ impl AggregateBondedTransactionV1 {
             ));
         }
         let mut transactions = Vec::new();
-        for _ in 0..payload_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < payload_size as usize {
             let element;
             (element, payload) = EmbeddedTransaction::deserialize(payload)?;
             transactions.push(element);
+            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
         }
         let mut cosignatures = Vec::new();
-        for _ in 0..0 {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while initial_payload_len - payload.len() < size as usize {
             let element;
             (element, payload) = Cosignature::deserialize(payload)?;
             cosignatures.push(element);
@@ -14195,13 +14282,17 @@ impl AggregateBondedTransactionV1 {
         let fee = self.fee.serialize();
         let deadline = self.deadline.serialize();
         let transactions_hash = self.transactions_hash.serialize();
-        let payload_size = (self.transactions.len() as u32).to_le_bytes();
+        let payload_size = (((self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7)
+            as u32)
+            .to_le_bytes();
         let aggregate_transaction_header_reserved_1 = 0u32.to_le_bytes();
-        let transactions: Vec<u8> = self
+        let mut transactions: Vec<u8> = self
             .transactions
             .iter()
             .flat_map(|x| x.serialize())
             .collect();
+        let transactions_tmp_size = transactions.len();
+        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
         let cosignatures: Vec<u8> = self
             .cosignatures
             .iter()
@@ -14640,11 +14731,13 @@ impl AggregateBondedTransactionV2 {
         size += self.transactions_hash.size();
         size += 4;
         size += 4;
-        size += self.transactions.iter().map(|x| x.size()).sum::<usize>();
-        size += 0;
+        size += (self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7;
+        size += self.cosignatures.iter().map(|x| x.size()).sum::<usize>();
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -14699,13 +14792,18 @@ impl AggregateBondedTransactionV2 {
             ));
         }
         let mut transactions = Vec::new();
-        for _ in 0..payload_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < payload_size as usize {
             let element;
             (element, payload) = EmbeddedTransaction::deserialize(payload)?;
             transactions.push(element);
+            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
         }
         let mut cosignatures = Vec::new();
-        for _ in 0..0 {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while initial_payload_len - payload.len() < size as usize {
             let element;
             (element, payload) = Cosignature::deserialize(payload)?;
             cosignatures.push(element);
@@ -14734,13 +14832,17 @@ impl AggregateBondedTransactionV2 {
         let fee = self.fee.serialize();
         let deadline = self.deadline.serialize();
         let transactions_hash = self.transactions_hash.serialize();
-        let payload_size = (self.transactions.len() as u32).to_le_bytes();
+        let payload_size = (((self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7)
+            as u32)
+            .to_le_bytes();
         let aggregate_transaction_header_reserved_1 = 0u32.to_le_bytes();
-        let transactions: Vec<u8> = self
+        let mut transactions: Vec<u8> = self
             .transactions
             .iter()
             .flat_map(|x| x.serialize())
             .collect();
+        let transactions_tmp_size = transactions.len();
+        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
         let cosignatures: Vec<u8> = self
             .cosignatures
             .iter()
@@ -15135,6 +15237,8 @@ impl VotingKeyLinkTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -15547,6 +15651,8 @@ impl EmbeddedVotingKeyLinkTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -15954,6 +16060,8 @@ impl VrfKeyLinkTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -16322,6 +16430,8 @@ impl EmbeddedVrfKeyLinkTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -16738,6 +16848,8 @@ impl HashLockTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -17128,6 +17240,8 @@ impl EmbeddedHashLockTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -17645,6 +17759,8 @@ impl SecretLockTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -18079,6 +18195,8 @@ impl EmbeddedSecretLockTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -18558,6 +18676,8 @@ impl SecretProofTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -18609,7 +18729,9 @@ impl SecretProofTransactionV1 {
         let hash_algorithm;
         (hash_algorithm, payload) = LockHashAlgorithm::deserialize(payload)?;
         let mut proof = Vec::new();
-        for _ in 0..proof_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < proof_size as usize {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(payload);
             let element = u8::from_le_bytes(bytes);
@@ -19013,6 +19135,8 @@ impl EmbeddedSecretProofTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -19058,7 +19182,9 @@ impl EmbeddedSecretProofTransactionV1 {
         let hash_algorithm;
         (hash_algorithm, payload) = LockHashAlgorithm::deserialize(payload)?;
         let mut proof = Vec::new();
-        for _ in 0..proof_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < proof_size as usize {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(payload);
             let element = u8::from_le_bytes(bytes);
@@ -19509,6 +19635,8 @@ impl AccountMetadataTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -19560,7 +19688,9 @@ impl AccountMetadataTransactionV1 {
         let value_size = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
         let mut value = Vec::new();
-        for _ in 0..value_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < value_size as usize {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(payload);
             let element = u8::from_le_bytes(bytes);
@@ -19976,6 +20106,8 @@ impl EmbeddedAccountMetadataTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -20021,7 +20153,9 @@ impl EmbeddedAccountMetadataTransactionV1 {
         let value_size = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
         let mut value = Vec::new();
-        for _ in 0..value_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < value_size as usize {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(payload);
             let element = u8::from_le_bytes(bytes);
@@ -20488,6 +20622,8 @@ impl MosaicMetadataTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -20541,7 +20677,9 @@ impl MosaicMetadataTransactionV1 {
         let value_size = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
         let mut value = Vec::new();
-        for _ in 0..value_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < value_size as usize {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(payload);
             let element = u8::from_le_bytes(bytes);
@@ -20977,6 +21115,8 @@ impl EmbeddedMosaicMetadataTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -21024,7 +21164,9 @@ impl EmbeddedMosaicMetadataTransactionV1 {
         let value_size = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
         let mut value = Vec::new();
-        for _ in 0..value_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < value_size as usize {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(payload);
             let element = u8::from_le_bytes(bytes);
@@ -21494,6 +21636,8 @@ impl NamespaceMetadataTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -21547,7 +21691,9 @@ impl NamespaceMetadataTransactionV1 {
         let value_size = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
         let mut value = Vec::new();
-        for _ in 0..value_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < value_size as usize {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(payload);
             let element = u8::from_le_bytes(bytes);
@@ -21983,6 +22129,8 @@ impl EmbeddedNamespaceMetadataTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -22030,7 +22178,9 @@ impl EmbeddedNamespaceMetadataTransactionV1 {
         let value_size = u16::from_le_bytes(payload[..2].try_into()?);
         payload = &payload[2..];
         let mut value = Vec::new();
-        for _ in 0..value_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < value_size as usize {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(payload);
             let element = u8::from_le_bytes(bytes);
@@ -22696,6 +22846,8 @@ impl MosaicDefinitionTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -23136,6 +23288,8 @@ impl EmbeddedMosaicDefinitionTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -23563,6 +23717,8 @@ impl MosaicSupplyChangeTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -23953,6 +24109,8 @@ impl EmbeddedMosaicSupplyChangeTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -24353,6 +24511,8 @@ impl MosaicSupplyRevocationTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -24721,6 +24881,8 @@ impl EmbeddedMosaicSupplyRevocationTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -25244,6 +25406,8 @@ impl MultisigAccountModificationTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -25303,13 +25467,17 @@ impl MultisigAccountModificationTransactionV1 {
             ));
         }
         let mut address_additions = Vec::new();
-        for _ in 0..address_additions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < address_additions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             address_additions.push(element);
         }
         let mut address_deletions = Vec::new();
-        for _ in 0..address_deletions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < address_deletions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             address_deletions.push(element);
@@ -25783,6 +25951,8 @@ impl EmbeddedMultisigAccountModificationTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -25836,13 +26006,17 @@ impl EmbeddedMultisigAccountModificationTransactionV1 {
             ));
         }
         let mut address_additions = Vec::new();
-        for _ in 0..address_additions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < address_additions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             address_additions.push(element);
         }
         let mut address_deletions = Vec::new();
-        for _ in 0..address_deletions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < address_deletions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             address_deletions.push(element);
@@ -26240,6 +26414,8 @@ impl AddressAliasTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -26630,6 +26806,8 @@ impl EmbeddedAddressAliasTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -27048,6 +27226,8 @@ impl MosaicAliasTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -27438,6 +27618,8 @@ impl EmbeddedMosaicAliasTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -27929,6 +28111,8 @@ impl NamespaceRegistrationTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -27982,7 +28166,9 @@ impl NamespaceRegistrationTransactionV1 {
         let name_size = u8::from_le_bytes(payload[..1].try_into()?);
         payload = &payload[1..];
         let mut name = Vec::new();
-        for _ in 0..name_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < name_size as usize {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(payload);
             let element = u8::from_le_bytes(bytes);
@@ -28412,6 +28598,8 @@ impl EmbeddedNamespaceRegistrationTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -28459,7 +28647,9 @@ impl EmbeddedNamespaceRegistrationTransactionV1 {
         let name_size = u8::from_le_bytes(payload[..1].try_into()?);
         payload = &payload[1..];
         let mut name = Vec::new();
-        for _ in 0..name_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < name_size as usize {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(payload);
             let element = u8::from_le_bytes(bytes);
@@ -29068,6 +29258,8 @@ impl AccountAddressRestrictionTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -29125,13 +29317,17 @@ impl AccountAddressRestrictionTransactionV1 {
             ));
         }
         let mut restriction_additions = Vec::new();
-        for _ in 0..restriction_additions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < restriction_additions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             restriction_additions.push(element);
         }
         let mut restriction_deletions = Vec::new();
-        for _ in 0..restriction_deletions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < restriction_deletions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             restriction_deletions.push(element);
@@ -29573,6 +29769,8 @@ impl EmbeddedAccountAddressRestrictionTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -29624,13 +29822,17 @@ impl EmbeddedAccountAddressRestrictionTransactionV1 {
             ));
         }
         let mut restriction_additions = Vec::new();
-        for _ in 0..restriction_additions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < restriction_additions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             restriction_additions.push(element);
         }
         let mut restriction_deletions = Vec::new();
-        for _ in 0..restriction_deletions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < restriction_deletions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             restriction_deletions.push(element);
@@ -30105,6 +30307,8 @@ impl AccountMosaicRestrictionTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -30162,13 +30366,17 @@ impl AccountMosaicRestrictionTransactionV1 {
             ));
         }
         let mut restriction_additions = Vec::new();
-        for _ in 0..restriction_additions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < restriction_additions_count as usize {
             let element;
             (element, payload) = UnresolvedMosaicId::deserialize(payload)?;
             restriction_additions.push(element);
         }
         let mut restriction_deletions = Vec::new();
-        for _ in 0..restriction_deletions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < restriction_deletions_count as usize {
             let element;
             (element, payload) = UnresolvedMosaicId::deserialize(payload)?;
             restriction_deletions.push(element);
@@ -30610,6 +30818,8 @@ impl EmbeddedAccountMosaicRestrictionTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -30661,13 +30871,17 @@ impl EmbeddedAccountMosaicRestrictionTransactionV1 {
             ));
         }
         let mut restriction_additions = Vec::new();
-        for _ in 0..restriction_additions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < restriction_additions_count as usize {
             let element;
             (element, payload) = UnresolvedMosaicId::deserialize(payload)?;
             restriction_additions.push(element);
         }
         let mut restriction_deletions = Vec::new();
-        for _ in 0..restriction_deletions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < restriction_deletions_count as usize {
             let element;
             (element, payload) = UnresolvedMosaicId::deserialize(payload)?;
             restriction_deletions.push(element);
@@ -31142,6 +31356,8 @@ impl AccountOperationRestrictionTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -31199,13 +31415,17 @@ impl AccountOperationRestrictionTransactionV1 {
             ));
         }
         let mut restriction_additions = Vec::new();
-        for _ in 0..restriction_additions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < restriction_additions_count as usize {
             let element;
             (element, payload) = TransactionType::deserialize(payload)?;
             restriction_additions.push(element);
         }
         let mut restriction_deletions = Vec::new();
-        for _ in 0..restriction_deletions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < restriction_deletions_count as usize {
             let element;
             (element, payload) = TransactionType::deserialize(payload)?;
             restriction_deletions.push(element);
@@ -31647,6 +31867,8 @@ impl EmbeddedAccountOperationRestrictionTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -31698,13 +31920,17 @@ impl EmbeddedAccountOperationRestrictionTransactionV1 {
             ));
         }
         let mut restriction_additions = Vec::new();
-        for _ in 0..restriction_additions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < restriction_additions_count as usize {
             let element;
             (element, payload) = TransactionType::deserialize(payload)?;
             restriction_additions.push(element);
         }
         let mut restriction_deletions = Vec::new();
-        for _ in 0..restriction_deletions_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < restriction_deletions_count as usize {
             let element;
             (element, payload) = TransactionType::deserialize(payload)?;
             restriction_deletions.push(element);
@@ -32150,6 +32376,8 @@ impl MosaicAddressRestrictionTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -32602,6 +32830,8 @@ impl EmbeddedMosaicAddressRestrictionTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -33238,6 +33468,8 @@ impl MosaicGlobalRestrictionTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -33734,6 +33966,8 @@ impl EmbeddedMosaicGlobalRestrictionTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -34275,6 +34509,8 @@ impl TransferTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -34338,13 +34574,17 @@ impl TransferTransactionV1 {
             ));
         }
         let mut mosaics = Vec::new();
-        for _ in 0..mosaics_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < mosaics_count as usize {
             let element;
             (element, payload) = UnresolvedMosaic::deserialize(payload)?;
             mosaics.push(element);
         }
         let mut message = Vec::new();
-        for _ in 0..message_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < message_size as usize {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(payload);
             let element = u8::from_le_bytes(bytes);
@@ -34813,6 +35053,8 @@ impl EmbeddedTransferTransactionV1 {
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        #[allow(unused)]
+        let initial_payload_len = payload.len();
         if payload.len() < 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![4],
@@ -34870,13 +35112,17 @@ impl EmbeddedTransferTransactionV1 {
             ));
         }
         let mut mosaics = Vec::new();
-        for _ in 0..mosaics_count {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < mosaics_count as usize {
             let element;
             (element, payload) = UnresolvedMosaic::deserialize(payload)?;
             mosaics.push(element);
         }
         let mut message = Vec::new();
-        for _ in 0..message_size {
+        #[allow(unused)]
+        let tmp_payload_len = payload.len();
+        while tmp_payload_len - payload.len() < message_size as usize {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(payload);
             let element = u8::from_le_bytes(bytes);

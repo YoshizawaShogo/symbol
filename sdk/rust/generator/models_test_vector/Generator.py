@@ -23,7 +23,7 @@ def generate_files(ast_models, output_path: Path):
     type_dict = get_type_dict(ast_models)
     # ast_model_dict = get_ast_model_dict(ast_models)
     
-    output = '#[cfg(not(feature = "private_network"))] mod symbol_models_test {use hex::decode; use std::str::FromStr; use symbol::symbol::prelude::*;'
+    output = '#[cfg(not(feature = "private_network"))] #[allow(unused)] mod symbol_models_test {use hex::decode; use std::str::FromStr; use symbol::symbol::prelude::*;'
     
     # transaction
     with open("../../tests/vectors/symbol/models/transactions.json") as f:
@@ -35,6 +35,9 @@ def generate_files(ast_models, output_path: Path):
     output += '}'
     with open(output_path, 'w', encoding='utf8', newline='') as output_file:
         output_file.write(output)
+        
+def get_publickey_member_name_and_type_list(ast_models):
+    return [(f.name, f.field_type) for f in ast_models if "PublicKey" in str(f.field_type)]
 
 def get_type_dict(ast_models):
     type_dict = {} # key: type_name, value: ast
@@ -74,7 +77,7 @@ def parse_test(json_data_of_test, type_dict, ast_models):
     ret += parse_struct_rhs(struct, test["descriptor"], type_dict)
     ret += ";"
     ret += f'let payload = decode("{payload}").unwrap();'
-    ret += "assert_eq!(payload, tx.serialize());"
+    ret += "assert_eq!((payload.len(), payload.clone()), (tx.serialize().len(), tx.serialize()));"
     
     # footer
     ret += '\n\n// Deserialize Test\n'
@@ -87,6 +90,10 @@ def parse_struct_rhs(ast_model_of_struct, json_of_struct: list, type_dict):
     ret += f'let mut tmp_struct = {ast_model_of_struct.name}::default();'
     if 'network' in [f.name for f in ast_model_of_struct.fields]:
         ret += f'tmp_struct.network = NetworkType::TESTNET;'
+    publickey_member_list = get_publickey_member_name_and_type_list(ast_model_of_struct.fields)
+    print(publickey_member_list)
+    for pubkey_name, pubkey_type in publickey_member_list:
+        ret += f'tmp_struct.{pubkey_name} = {pubkey_type}::from_bytes(&[0; 32]).unwrap();'
     
     for variable, value in json_of_struct.items():
         if variable == 'type':

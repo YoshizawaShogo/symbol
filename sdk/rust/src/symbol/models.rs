@@ -1381,7 +1381,7 @@ impl Transaction {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -2684,7 +2684,7 @@ impl EmbeddedTransaction {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -4120,7 +4120,7 @@ impl Block {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -4909,7 +4909,7 @@ impl NemesisBlockV1 {
             let element;
             (element, payload) = Transaction::deserialize(payload)?;
             transactions.push(element);
-            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
+            payload = &payload[((8 - (tmp_payload_len - payload.len()) % 8) % 8)..];
         }
         let self_ = Self {
             signature,
@@ -4963,7 +4963,7 @@ impl NemesisBlockV1 {
             .flat_map(|x| x.serialize())
             .collect();
         let transactions_tmp_size = transactions.len();
-        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
+        transactions.extend_from_slice(&vec![0; (8 - (transactions_tmp_size % 8)) % 8]);
         [
             size.iter(),
             verifiable_entity_header_reserved_1.iter(),
@@ -5550,7 +5550,7 @@ impl NormalBlockV1 {
             let element;
             (element, payload) = Transaction::deserialize(payload)?;
             transactions.push(element);
-            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
+            payload = &payload[((8 - (tmp_payload_len - payload.len()) % 8) % 8)..];
         }
         let self_ = Self {
             signature,
@@ -5596,7 +5596,7 @@ impl NormalBlockV1 {
             .flat_map(|x| x.serialize())
             .collect();
         let transactions_tmp_size = transactions.len();
-        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
+        transactions.extend_from_slice(&vec![0; (8 - (transactions_tmp_size % 8)) % 8]);
         [
             size.iter(),
             verifiable_entity_header_reserved_1.iter(),
@@ -6242,7 +6242,7 @@ impl ImportanceBlockV1 {
             let element;
             (element, payload) = Transaction::deserialize(payload)?;
             transactions.push(element);
-            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
+            payload = &payload[((8 - (tmp_payload_len - payload.len()) % 8) % 8)..];
         }
         let self_ = Self {
             signature,
@@ -6296,7 +6296,7 @@ impl ImportanceBlockV1 {
             .flat_map(|x| x.serialize())
             .collect();
         let transactions_tmp_size = transactions.len();
-        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
+        transactions.extend_from_slice(&vec![0; (8 - (transactions_tmp_size % 8)) % 8]);
         [
             size.iter(),
             verifiable_entity_header_reserved_1.iter(),
@@ -6796,7 +6796,7 @@ impl Receipt {
         }
         let size = u32::from_le_bytes(payload[..4].try_into()?);
         payload = &payload[4..];
-        if size as usize >= payload.len() + 4 {
+        if size as usize > payload.len() + 4 {
             return Err(SymbolError::SizeError {
                 expect: vec![size as usize],
                 real: payload.len() + 4,
@@ -13150,7 +13150,7 @@ impl AggregateCompleteTransactionV1 {
             let element;
             (element, payload) = EmbeddedTransaction::deserialize(payload)?;
             transactions.push(element);
-            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
+            payload = &payload[((8 - (tmp_payload_len - payload.len()) % 8) % 8)..];
         }
         let mut cosignatures = Vec::new();
         #[allow(unused)]
@@ -13194,7 +13194,7 @@ impl AggregateCompleteTransactionV1 {
             .flat_map(|x| x.serialize())
             .collect();
         let transactions_tmp_size = transactions.len();
-        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
+        transactions.extend_from_slice(&vec![0; (8 - (transactions_tmp_size % 8)) % 8]);
         let cosignatures: Vec<u8> = self
             .cosignatures
             .iter()
@@ -13698,7 +13698,7 @@ impl AggregateCompleteTransactionV2 {
             let element;
             (element, payload) = EmbeddedTransaction::deserialize(payload)?;
             transactions.push(element);
-            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
+            payload = &payload[((8 - (tmp_payload_len - payload.len()) % 8) % 8)..];
         }
         let mut cosignatures = Vec::new();
         #[allow(unused)]
@@ -13742,7 +13742,7 @@ impl AggregateCompleteTransactionV2 {
             .flat_map(|x| x.serialize())
             .collect();
         let transactions_tmp_size = transactions.len();
-        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
+        transactions.extend_from_slice(&vec![0; (8 - (transactions_tmp_size % 8)) % 8]);
         let cosignatures: Vec<u8> = self
             .cosignatures
             .iter()
@@ -14248,7 +14248,7 @@ impl AggregateBondedTransactionV1 {
             let element;
             (element, payload) = EmbeddedTransaction::deserialize(payload)?;
             transactions.push(element);
-            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
+            payload = &payload[((8 - (tmp_payload_len - payload.len()) % 8) % 8)..];
         }
         let mut cosignatures = Vec::new();
         #[allow(unused)]
@@ -14292,7 +14292,7 @@ impl AggregateBondedTransactionV1 {
             .flat_map(|x| x.serialize())
             .collect();
         let transactions_tmp_size = transactions.len();
-        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
+        transactions.extend_from_slice(&vec![0; (8 - (transactions_tmp_size % 8)) % 8]);
         let cosignatures: Vec<u8> = self
             .cosignatures
             .iter()
@@ -14798,7 +14798,7 @@ impl AggregateBondedTransactionV2 {
             let element;
             (element, payload) = EmbeddedTransaction::deserialize(payload)?;
             transactions.push(element);
-            payload = &payload[(8 - (tmp_payload_len - payload.len()) % 8)..];
+            payload = &payload[((8 - (tmp_payload_len - payload.len()) % 8) % 8)..];
         }
         let mut cosignatures = Vec::new();
         #[allow(unused)]
@@ -14842,7 +14842,7 @@ impl AggregateBondedTransactionV2 {
             .flat_map(|x| x.serialize())
             .collect();
         let transactions_tmp_size = transactions.len();
-        transactions.extend_from_slice(&vec![0; 8 - (transactions_tmp_size % 8)]);
+        transactions.extend_from_slice(&vec![0; (8 - (transactions_tmp_size % 8)) % 8]);
         let cosignatures: Vec<u8> = self
             .cosignatures
             .iter()
@@ -22360,7 +22360,7 @@ impl MosaicFlags {
             2 => Ok((MosaicFlags::TRANSFERABLE, rest)),
             4 => Ok((MosaicFlags::RESTRICTABLE, rest)),
             8 => Ok((MosaicFlags::REVOKABLE, rest)),
-            x if (!0 & !1 & !2 & !4 & !8 & !0) == 0 => Ok((Self::X(x), rest)),
+            x if (!0 & !1 & !2 & !4 & !8 & x) == 0 => Ok((Self::X(x), rest)),
             other => Err(SymbolError::MismatchError {
                 pattern: vec![other as u32],
                 place: "MosaicFlags".to_string(),
@@ -28790,7 +28790,7 @@ impl AccountRestrictionFlags {
             4 => Ok((AccountRestrictionFlags::TRANSACTION_TYPE, rest)),
             16384 => Ok((AccountRestrictionFlags::OUTGOING, rest)),
             32768 => Ok((AccountRestrictionFlags::BLOCK, rest)),
-            x if (!1 & !2 & !4 & !16384 & !32768 & !0) == 0 => Ok((Self::X(x), rest)),
+            x if (!1 & !2 & !4 & !16384 & !32768 & x) == 0 => Ok((Self::X(x), rest)),
             other => Err(SymbolError::MismatchError {
                 pattern: vec![other as u32],
                 place: "AccountRestrictionFlags".to_string(),

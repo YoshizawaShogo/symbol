@@ -86,7 +86,7 @@ def generate_enum(ast_model):
                 )
             )
         )
-        ret += '!0) == 0 => Ok((Self::X(x), rest)),'
+        ret += 'x) == 0 => Ok((Self::X(x), rest)),'
     ret += f'other => Err(SymbolError::MismatchError{{ pattern: vec![ other as u32], place: "{ast_model.name}".to_string() }}),'
     ret += '}'
     ret += '}'

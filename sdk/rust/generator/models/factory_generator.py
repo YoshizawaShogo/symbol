@@ -61,7 +61,7 @@ def generate_factory(factory, products):
             ret += f'({fn}, payload) = {ft}::deserialize(payload)?;'
         
         if f.name == 'size':
-            ret += f'if size as usize >= payload.len() + {fs} {{ return Err(SymbolError::SizeError{{expect: vec![size as usize], real: payload.len() + {fs} }}); }}'
+            ret += f'if size as usize > payload.len() + {fs} {{ return Err(SymbolError::SizeError{{expect: vec![size as usize], real: payload.len() + {fs} }}); }}'
         if f.is_reserved:
             ret += f'if {f.name} != 0 {{ return Err(SymbolError::ReservedIsNotZeroError({f.name} as u32)); }}'
         if util.constantized_by(f.name, factory):

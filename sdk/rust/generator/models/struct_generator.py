@@ -151,7 +151,7 @@ def generate_struct(ast_model):
                 ret += f'(element, payload) = {fte}::deserialize(payload)?;'
                 ret += f'{fn}.push(element);'
                 if alignment is not None:
-                    ret += f'payload = &payload[({alignment} - (tmp_payload_len - payload.len()) % {alignment})..];'
+                    ret += f'payload = &payload[(({alignment} - (tmp_payload_len - payload.len()) % {alignment}) % {alignment})..];'
             else:
                 raise "unexpected"
             ret += '}'
@@ -214,7 +214,7 @@ def generate_struct(ast_model):
                 if ft.is_expandable or type(fte) == str:
                     ret += f'let mut {fn}: Vec<u8> = self.{fn}.iter().flat_map(|x| x.serialize()).collect();'
                     ret += f'let {fn}_tmp_size = {fn}.len();'
-                    ret += f'{fn}.extend_from_slice(&vec![0; {alignment} - ({fn}_tmp_size % {alignment})]);'
+                    ret += f'{fn}.extend_from_slice(&vec![0; ({alignment} - ({fn}_tmp_size % {alignment})) % {alignment}]);'
                 else:
                     raise "unexpected"
         elif type(ft) == catparser.ast.FixedSizeInteger:

@@ -30,6 +30,7 @@ pub trait TraitMessage {
 //*size: 8
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct Amount(pub u64);
 impl Amount {
     pub const SIZE: usize = 8;
@@ -70,6 +71,7 @@ impl Amount {
 //*size: 8
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct BlockDuration(pub u64);
 impl BlockDuration {
     pub const SIZE: usize = 8;
@@ -111,6 +113,7 @@ impl BlockDuration {
 //*size: 4
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct BlockFeeMultiplier(pub u32);
 impl BlockFeeMultiplier {
     pub const SIZE: usize = 4;
@@ -154,6 +157,7 @@ impl BlockFeeMultiplier {
 //*size: 8
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct Difficulty(pub u64);
 impl Difficulty {
     pub const SIZE: usize = 8;
@@ -195,6 +199,7 @@ impl Difficulty {
 //*size: 4
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct FinalizationEpoch(pub u32);
 impl FinalizationEpoch {
     pub const SIZE: usize = 4;
@@ -236,6 +241,7 @@ impl FinalizationEpoch {
 //*size: 4
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct FinalizationPoint(pub u32);
 impl FinalizationPoint {
     pub const SIZE: usize = 4;
@@ -277,6 +283,7 @@ impl FinalizationPoint {
 //*size: 8
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct Height(pub u64);
 impl Height {
     pub const SIZE: usize = 8;
@@ -318,6 +325,7 @@ impl Height {
 //*size: 8
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct Importance(pub u64);
 impl Importance {
     pub const SIZE: usize = 8;
@@ -358,6 +366,7 @@ impl Importance {
 //*size: 8
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct ImportanceHeight(pub u64);
 impl ImportanceHeight {
     pub const SIZE: usize = 8;
@@ -399,6 +408,7 @@ impl ImportanceHeight {
 //*size: 8
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct UnresolvedMosaicId(pub u64);
 impl UnresolvedMosaicId {
     pub const SIZE: usize = 8;
@@ -439,6 +449,7 @@ impl UnresolvedMosaicId {
 //*size: 8
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct MosaicId(pub u64);
 impl MosaicId {
     pub const SIZE: usize = 8;
@@ -480,6 +491,7 @@ impl MosaicId {
 //*size: 8
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct Timestamp(pub u64);
 impl Timestamp {
     pub const SIZE: usize = 8;
@@ -700,6 +712,7 @@ impl Hash512 {
 //*size: None
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_struct()
+#[derive(PartialOrd, Ord)]
 pub struct Mosaic {
     pub mosaic_id: MosaicId,
     pub amount: Amount,
@@ -782,6 +795,7 @@ impl Mosaic {
 //*size: None
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_struct()
+#[derive(PartialOrd, Ord)]
 pub struct UnresolvedMosaic {
     pub mosaic_id: UnresolvedMosaicId,
     pub amount: Amount,
@@ -845,7 +859,7 @@ impl UnresolvedMosaic {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
-#[derive(Copy)]
+#[derive(PartialOrd, Ord, Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum LinkAction {
@@ -904,7 +918,7 @@ impl LinkAction {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
-#[derive(Copy)]
+#[derive(PartialOrd, Ord, Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 #[cfg(not(feature = "private_network"))]
@@ -1034,7 +1048,7 @@ impl NetworkType {
 //*size: 2
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
-#[derive(Copy)]
+#[derive(PartialOrd, Ord, Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u16)]
 pub enum TransactionType {
@@ -3658,7 +3672,7 @@ impl ProofScalar {
 //*size: 2
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
-#[derive(Copy)]
+#[derive(PartialOrd, Ord, Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u16)]
 pub enum BlockType {
@@ -6599,7 +6613,7 @@ impl FinalizedBlockHeader {
 //*size: 2
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
-#[derive(Copy)]
+#[derive(PartialOrd, Ord, Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u16)]
 pub enum ReceiptType {
@@ -9128,6 +9142,7 @@ impl MosaicRentalFeeReceipt {
 //*size: 8
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct NamespaceId(pub u64);
 impl NamespaceId {
     pub const SIZE: usize = 8;
@@ -9178,7 +9193,7 @@ impl NamespaceId {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
-#[derive(Copy)]
+#[derive(PartialOrd, Ord, Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum NamespaceRegistrationType {
@@ -9237,7 +9252,7 @@ impl NamespaceRegistrationType {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
-#[derive(Copy)]
+#[derive(PartialOrd, Ord, Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum AliasAction {
@@ -17356,7 +17371,7 @@ impl TraitSignerPublicKey for EmbeddedHashLockTransactionV1 {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
-#[derive(Copy)]
+#[derive(PartialOrd, Ord, Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum LockHashAlgorithm {
@@ -22253,6 +22268,7 @@ impl TraitSignerPublicKey for EmbeddedNamespaceMetadataTransactionV1 {
 //*size: 4
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct MosaicNonce(pub u32);
 impl MosaicNonce {
     pub const SIZE: usize = 4;
@@ -22317,7 +22333,7 @@ impl MosaicNonce {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
-#[derive(Copy)]
+#[derive(PartialOrd, Ord, Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum MosaicFlags {
@@ -22441,7 +22457,7 @@ impl Not for MosaicFlags {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
-#[derive(Copy)]
+#[derive(PartialOrd, Ord, Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum MosaicSupplyChangeAction {
@@ -28747,7 +28763,7 @@ impl TraitSignerPublicKey for EmbeddedNamespaceRegistrationTransactionV1 {
 //*size: 2
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
-#[derive(Copy)]
+#[derive(PartialOrd, Ord, Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u16)]
 pub enum AccountRestrictionFlags {
@@ -32942,6 +32958,7 @@ impl TraitSignerPublicKey for EmbeddedMosaicAddressRestrictionTransactionV1 {
 //*size: 8
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_integer()
+#[derive(PartialOrd, Ord, Copy)]
 pub struct MosaicRestrictionKey(pub u64);
 impl MosaicRestrictionKey {
     pub const SIZE: usize = 8;
@@ -33007,7 +33024,7 @@ impl MosaicRestrictionKey {
 //*size: 1
 #[derive(Debug, Clone, PartialEq, Eq)]
 // generated from generate_enum()
-#[derive(Copy)]
+#[derive(PartialOrd, Ord, Copy)]
 #[allow(non_camel_case_types)]
 #[repr(u8)]
 pub enum MosaicRestrictionType {

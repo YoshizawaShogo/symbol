@@ -7,6 +7,8 @@ def generate_integer(ast_model):
     assert(ast_model.is_unsigned)
     # define variables
     ret = '// generated from generate_integer()\n'
+    ret += '#[derive(PartialOrd, Ord)]'
+    ret += '#[derive(Copy)]'
     name_lower = ast_model.name.lower()
     value_bit_width = ast_model.size * 8
     if value_bit_width not in (8, 16, 32, 64):

@@ -7,6 +7,8 @@ from generator import util
 def generate_struct(ast_model):
     struct_name = ast_model.name
     ret = '// generated from generate_struct()\n'
+    if struct_name.endswith('Mosaic'):
+        ret += '#[derive(PartialOrd, Ord)]'
     
     # struct
     ret += f'pub struct {ast_model.name} {{'

@@ -1186,6 +1186,7 @@ mod symbol_models_test {
                                 tmp_struct.amount = Amount(101);
                                 tmp_struct
                             });
+                            tmp_vec.sort_unstable();
                             tmp_vec
                         };
                         tmp_struct
@@ -1262,6 +1263,7 @@ mod symbol_models_test {
                                 tmp_struct.amount = Amount(100);
                                 tmp_struct
                             });
+                            tmp_vec.sort_unstable();
                             tmp_vec
                         };
                         tmp_struct
@@ -1332,6 +1334,7 @@ mod symbol_models_test {
                                 .unwrap();
                         tmp_struct.mosaics = {
                             let mut tmp_vec = Vec::new();
+                            tmp_vec.sort_unstable();
                             tmp_vec
                         };
                         tmp_struct.message = "Goodbye 👋".as_bytes().to_vec();
@@ -1361,6 +1364,7 @@ mod symbol_models_test {
                                 tmp_struct.amount = Amount(1);
                                 tmp_struct
                             });
+                            tmp_vec.sort_unstable();
                             tmp_vec
                         };
                         tmp_struct.message = "D600000300504C5445000000FBAF93F7".as_bytes().to_vec();
@@ -1421,6 +1425,7 @@ mod symbol_models_test {
                                 .unwrap();
                         tmp_struct.mosaics = {
                             let mut tmp_vec = Vec::new();
+                            tmp_vec.sort_unstable();
                             tmp_vec
                         };
                         tmp_struct.message = "Hello 👋".as_bytes().to_vec();
@@ -1450,6 +1455,7 @@ mod symbol_models_test {
                                 tmp_struct.amount = Amount(1);
                                 tmp_struct
                             });
+                            tmp_vec.sort_unstable();
                             tmp_vec
                         };
                         tmp_struct.message = "D600000300504C5445000000FBAF93F7".as_bytes().to_vec();
@@ -3505,6 +3511,7 @@ mod symbol_models_test {
                     tmp_struct.amount = Amount(100);
                     tmp_struct
                 });
+                tmp_vec.sort_unstable();
                 tmp_vec
             };
             tmp_struct.signer_public_key = PublicKey::from_str(
@@ -3549,6 +3556,7 @@ mod symbol_models_test {
                     tmp_struct.amount = Amount(1);
                     tmp_struct
                 });
+                tmp_vec.sort_unstable();
                 tmp_vec
             };
             tmp_struct.signer_public_key = PublicKey::from_str(
@@ -3599,6 +3607,7 @@ mod symbol_models_test {
                     tmp_struct.amount = Amount(1);
                     tmp_struct
                 });
+                tmp_vec.sort_unstable();
                 tmp_vec
             };
             tmp_struct.signer_public_key = PublicKey::from_str(
@@ -3631,6 +3640,7 @@ mod symbol_models_test {
                 UnresolvedAddress::from_str("TCIFSMQZAX3IDPHUP2RTXP26N6BJRNKEBBKP33I").unwrap();
             tmp_struct.mosaics = {
                 let mut tmp_vec = Vec::new();
+                tmp_vec.sort_unstable();
                 tmp_vec
             };
             tmp_struct.message = "D600000300504C5445000000FBAF93F7".as_bytes().to_vec();
@@ -3670,6 +3680,7 @@ mod symbol_models_test {
                     tmp_struct.amount = Amount(1);
                     tmp_struct
                 });
+                tmp_vec.sort_unstable();
                 tmp_vec
             };
             tmp_struct.message = "It's some kind of magic, magic".as_bytes().to_vec();
@@ -3715,6 +3726,7 @@ mod symbol_models_test {
                     tmp_struct.amount = Amount(100);
                     tmp_struct
                 });
+                tmp_vec.sort_unstable();
                 tmp_vec
             };
             tmp_struct.message = "Hello 👋".as_bytes().to_vec();
@@ -3766,6 +3778,7 @@ mod symbol_models_test {
                     tmp_struct.amount = Amount(3);
                     tmp_struct
                 });
+                tmp_vec.sort_unstable();
                 tmp_vec
             };
             tmp_struct.signer_public_key = PublicKey::from_str(
@@ -3812,6 +3825,7 @@ mod symbol_models_test {
                                 tmp_struct.amount = Amount(100);
                                 tmp_struct
                             });
+                            tmp_vec.sort_unstable();
                             tmp_vec
                         };
                         tmp_struct
@@ -3880,6 +3894,7 @@ mod symbol_models_test {
                                 tmp_struct.amount = Amount(1);
                                 tmp_struct
                             });
+                            tmp_vec.sort_unstable();
                             tmp_vec
                         };
                         tmp_struct
@@ -3954,6 +3969,7 @@ mod symbol_models_test {
                                 tmp_struct.amount = Amount(1);
                                 tmp_struct
                             });
+                            tmp_vec.sort_unstable();
                             tmp_vec
                         };
                         tmp_struct
@@ -4010,6 +4026,7 @@ mod symbol_models_test {
                                 .unwrap();
                         tmp_struct.mosaics = {
                             let mut tmp_vec = Vec::new();
+                            tmp_vec.sort_unstable();
                             tmp_vec
                         };
                         tmp_struct.message = "D600000300504C5445000000FBAF93F7".as_bytes().to_vec();
@@ -4073,6 +4090,7 @@ mod symbol_models_test {
                                 tmp_struct.amount = Amount(1);
                                 tmp_struct
                             });
+                            tmp_vec.sort_unstable();
                             tmp_vec
                         };
                         tmp_struct.message = "It's some kind of magic, magic".as_bytes().to_vec();
@@ -4142,6 +4160,7 @@ mod symbol_models_test {
                                 tmp_struct.amount = Amount(100);
                                 tmp_struct
                             });
+                            tmp_vec.sort_unstable();
                             tmp_vec
                         };
                         tmp_struct.message = "Hello 👋".as_bytes().to_vec();
@@ -4217,6 +4236,7 @@ mod symbol_models_test {
                                 tmp_struct.amount = Amount(3);
                                 tmp_struct
                             });
+                            tmp_vec.sort_unstable();
                             tmp_vec
                         };
                         tmp_struct

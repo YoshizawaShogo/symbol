@@ -4,6 +4,7 @@ from catparser.DisplayType import DisplayType
 def generate_enum(ast_model):
     # common (i.e. prepare)
     ret = '// generated from generate_enum()\n'
+    ret += '#[derive(PartialOrd, Ord)]'
     ret += '#[derive(Copy)]'
     name_lower = ast_model.name.lower()
     value_bit_width = ast_model.size * 8

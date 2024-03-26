@@ -91,7 +91,6 @@ def parse_struct_rhs(ast_model_of_struct, json_of_struct: list, type_dict):
     if 'network' in [f.name for f in ast_model_of_struct.fields]:
         ret += f'tmp_struct.network = NetworkType::TESTNET;'
     publickey_member_list = get_publickey_member_name_and_type_list(ast_model_of_struct.fields)
-    print(publickey_member_list)
     for pubkey_name, pubkey_type in publickey_member_list:
         ret += f'tmp_struct.{pubkey_name} = {pubkey_type}::from_bytes(&[0; 32]).unwrap();'
     
@@ -122,7 +121,6 @@ def parse_struct_rhs(ast_model_of_struct, json_of_struct: list, type_dict):
             else:
                 exit("unexpected")
         ret += ";"
-    
     ret += 'tmp_struct }'
     return ret
 
@@ -178,6 +176,8 @@ def parse_vec_rhs(element_type, value, type_dict):
         else:
             exit("unexpected")
         ret += ');'
+    if str(ast_model.name).endswith("Mosaic"):
+        ret += f'tmp_vec.sort_unstable();'
     ret += 'tmp_vec}'
     return ret
     

@@ -3839,6 +3839,7 @@ impl TraitSignature for NemesisBlockV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for NemesisBlockV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -3847,6 +3848,7 @@ impl TraitSignerPublicKey for NemesisBlockV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///binary layout for a normal block header
 //name: NormalBlockV1
 //disposition: None
@@ -4468,6 +4470,7 @@ impl TraitSignature for NormalBlockV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for NormalBlockV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -4476,6 +4479,7 @@ impl TraitSignerPublicKey for NormalBlockV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///binary layout for an importance block header
 //name: ImportanceBlockV1
 //disposition: None
@@ -5170,6 +5174,7 @@ impl TraitSignature for ImportanceBlockV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for ImportanceBlockV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -5178,6 +5183,7 @@ impl TraitSignerPublicKey for ImportanceBlockV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///binary layout for finalization round
 //name: FinalizationRound
 //disposition: None
@@ -10010,6 +10016,7 @@ impl TraitSignature for AccountKeyLinkTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for AccountKeyLinkTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -10018,6 +10025,7 @@ impl TraitSignerPublicKey for AccountKeyLinkTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of AccountKeyLinkTransaction (V1, latest).
 //name: EmbeddedAccountKeyLinkTransactionV1
 //disposition: None
@@ -10365,6 +10373,7 @@ impl TraitSignerPublicKey for EmbeddedAccountKeyLinkTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///This transaction is required for all accounts willing to activate delegated harvesting (V1, latest).
 ///Announce a NodeKeyLinkTransaction to link an account with a public key used by TLS to create sessions.
 //name: NodeKeyLinkTransactionV1
@@ -10778,6 +10787,7 @@ impl TraitSignature for NodeKeyLinkTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for NodeKeyLinkTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -10786,6 +10796,7 @@ impl TraitSignerPublicKey for NodeKeyLinkTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of NodeKeyLinkTransaction (V1, latest).
 //name: EmbeddedNodeKeyLinkTransactionV1
 //disposition: None
@@ -11133,6 +11144,7 @@ impl TraitSignerPublicKey for EmbeddedNodeKeyLinkTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Cosignature attached to an AggregateCompleteTransaction or AggregateBondedTransaction.
 //name: Cosignature
 //disposition: None
@@ -11260,6 +11272,7 @@ impl TraitSignerPublicKey for Cosignature {
         self.signer_public_key = signer_public_key;
     }
 }
+
 impl TraitSignature for Cosignature {
     fn get_signature(&self) -> &Signature {
         &self.signature
@@ -11268,6 +11281,7 @@ impl TraitSignature for Cosignature {
         self.signature = signature;
     }
 }
+
 ///Cosignature detached from an AggregateCompleteTransaction or AggregateBondedTransaction.
 //name: DetachedCosignature
 //disposition: None
@@ -11425,6 +11439,7 @@ impl TraitSignerPublicKey for DetachedCosignature {
         self.signer_public_key = signer_public_key;
     }
 }
+
 impl TraitSignature for DetachedCosignature {
     fn get_signature(&self) -> &Signature {
         &self.signature
@@ -11433,6 +11448,7 @@ impl TraitSignature for DetachedCosignature {
         self.signature = signature;
     }
 }
+
 ///Send transactions in batches to different accounts (V1, deprecated).
 ///Use this transaction when all required signatures are available when the transaction is created.
 //name: AggregateCompleteTransactionV1
@@ -11972,6 +11988,7 @@ impl TraitSignature for AggregateCompleteTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for AggregateCompleteTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -11980,6 +11997,7 @@ impl TraitSignerPublicKey for AggregateCompleteTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Send transactions in batches to different accounts (V2, latest).
 ///Use this transaction when all required signatures are available when the transaction is created.
 //name: AggregateCompleteTransactionV2
@@ -12519,6 +12537,7 @@ impl TraitSignature for AggregateCompleteTransactionV2 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for AggregateCompleteTransactionV2 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -12527,6 +12546,7 @@ impl TraitSignerPublicKey for AggregateCompleteTransactionV2 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Propose an arrangement of transactions between different accounts (V1, deprecated).
 ///Use this transaction when not all required signatures are available when the transaction is created.
 ///Missing signatures must be provided using a Cosignature or DetachedCosignature.
@@ -13068,6 +13088,7 @@ impl TraitSignature for AggregateBondedTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for AggregateBondedTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -13076,6 +13097,7 @@ impl TraitSignerPublicKey for AggregateBondedTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Propose an arrangement of transactions between different accounts (V2, latest).
 ///Use this transaction when not all required signatures are available when the transaction is created.
 ///Missing signatures must be provided using a Cosignature or DetachedCosignature.
@@ -13617,6 +13639,7 @@ impl TraitSignature for AggregateBondedTransactionV2 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for AggregateBondedTransactionV2 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -13625,6 +13648,7 @@ impl TraitSignerPublicKey for AggregateBondedTransactionV2 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Link an account with a public key required for finalization voting (V1, latest).
 ///This transaction is required for node operators wanting to vote for [finalization](/concepts/block.html#finalization).
 ///Announce a VotingKeyLinkTransaction to associate a voting key with an account during a fixed period. An account can be linked to up to **3** different voting keys at the same time.
@@ -14085,6 +14109,7 @@ impl TraitSignature for VotingKeyLinkTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for VotingKeyLinkTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -14093,6 +14118,7 @@ impl TraitSignerPublicKey for VotingKeyLinkTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of VotingKeyLinkTransaction (V1, latest).
 //name: EmbeddedVotingKeyLinkTransactionV1
 //disposition: None
@@ -14484,6 +14510,7 @@ impl TraitSignerPublicKey for EmbeddedVotingKeyLinkTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Link an account with a VRF public key required for harvesting (V1, latest).
 ///Announce a VrfKeyLinkTransaction to link an account with a VRF public key. The linked key is used to randomize block production and leader/participant selection.
 ///This transaction is required for all accounts wishing to [harvest](/concepts/harvesting.html).
@@ -14898,6 +14925,7 @@ impl TraitSignature for VrfKeyLinkTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for VrfKeyLinkTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -14906,6 +14934,7 @@ impl TraitSignerPublicKey for VrfKeyLinkTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of VrfKeyLinkTransaction (V1, latest).
 //name: EmbeddedVrfKeyLinkTransactionV1
 //disposition: None
@@ -15253,6 +15282,7 @@ impl TraitSignerPublicKey for EmbeddedVrfKeyLinkTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Lock a deposit needed to announce an AggregateBondedTransaction (V1, latest).
 ///An AggregateBondedTransaction consumes network resources as it is stored in every node's partial cache while it waits to be fully signed. To avoid spam attacks a HashLockTransaction must be announced and confirmed before an AggregateBondedTransaction can be announced. The HashLockTransaction locks a certain amount of funds (**10** XYM by default) until the aggregate is signed.
 ///Upon completion of the aggregate, the locked funds become available again to the account that signed the HashLockTransaction.
@@ -15691,6 +15721,7 @@ impl TraitSignature for HashLockTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for HashLockTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -15699,6 +15730,7 @@ impl TraitSignerPublicKey for HashLockTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of HashLockTransaction.
 //name: EmbeddedHashLockTransactionV1
 //disposition: None
@@ -16068,6 +16100,7 @@ impl TraitSignerPublicKey for EmbeddedHashLockTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Enumeration of lock hash algorithms.
 //name: LockHashAlgorithm
 //base: <class 'catparser.ast.FixedSizeInteger'>
@@ -16612,6 +16645,7 @@ impl TraitSignature for SecretLockTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for SecretLockTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -16620,6 +16654,7 @@ impl TraitSignerPublicKey for SecretLockTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of SecretLockTransaction (V1, latest).
 //name: EmbeddedSecretLockTransactionV1
 //disposition: None
@@ -17033,6 +17068,7 @@ impl TraitSignerPublicKey for EmbeddedSecretLockTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Conclude a token swap between different chains (V1, latest).
 ///Use a SecretProofTransaction to unlock the funds locked by a SecretLockTransaction.
 ///The transaction must prove knowing the *proof* that unlocks the mosaics.
@@ -17536,6 +17572,7 @@ impl TraitSignature for SecretProofTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for SecretProofTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -17544,6 +17581,7 @@ impl TraitSignerPublicKey for SecretProofTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of SecretProofTransaction (V1, latest).
 //name: EmbeddedSecretProofTransactionV1
 //disposition: None
@@ -17980,6 +18018,7 @@ impl TraitSignerPublicKey for EmbeddedSecretProofTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Associate a key-value state ([metadata](/concepts/metadata.html)) to an **account** (V1, latest).
 ///\note This transaction must **always** be wrapped in an AggregateTransaction so that a cosignature from `target_address` can be provided. Without this cosignature the transaction is invalid.
 ///Compare to MosaicMetadataTransaction and NamespaceMetadataTransaction.
@@ -18495,6 +18534,7 @@ impl TraitSignature for AccountMetadataTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for AccountMetadataTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -18503,6 +18543,7 @@ impl TraitSignerPublicKey for AccountMetadataTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of AccountMetadataTransaction (V1, latest).
 //name: EmbeddedAccountMetadataTransactionV1
 //disposition: None
@@ -18951,6 +18992,7 @@ impl TraitSignerPublicKey for EmbeddedAccountMetadataTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Associate a key-value state ([metadata](/concepts/metadata.html)) to a **mosaic** (V1, latest).
 ///Compare to AccountMetadataTransaction and NamespaceMetadataTransaction.
 //name: MosaicMetadataTransactionV1
@@ -19487,6 +19529,7 @@ impl TraitSignature for MosaicMetadataTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for MosaicMetadataTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -19495,6 +19538,7 @@ impl TraitSignerPublicKey for MosaicMetadataTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of MosaicMetadataTransaction (V1, latest).
 //name: EmbeddedMosaicMetadataTransactionV1
 //disposition: None
@@ -19965,6 +20009,7 @@ impl TraitSignerPublicKey for EmbeddedMosaicMetadataTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Associate a key-value state ([metadata](/concepts/metadata.html)) to a **namespace** (V1, latest).
 ///Compare to AccountMetadataTransaction and MosaicMetadataTransaction.
 //name: NamespaceMetadataTransactionV1
@@ -20501,6 +20546,7 @@ impl TraitSignature for NamespaceMetadataTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for NamespaceMetadataTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -20509,6 +20555,7 @@ impl TraitSignerPublicKey for NamespaceMetadataTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of NamespaceMetadataTransaction (V1, latest).
 //name: EmbeddedNamespaceMetadataTransactionV1
 //disposition: None
@@ -20979,6 +21026,7 @@ impl TraitSignerPublicKey for EmbeddedNamespaceMetadataTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 //name: MosaicNonce
 //linked_type: <class 'catparser.ast.FixedSizeInteger'>
 //    short_name: uint32
@@ -21701,6 +21749,7 @@ impl TraitSignature for MosaicDefinitionTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for MosaicDefinitionTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -21709,6 +21758,7 @@ impl TraitSignerPublicKey for MosaicDefinitionTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of MosaicDefinitionTransaction (V1, latest).
 //name: EmbeddedMosaicDefinitionTransactionV1
 //disposition: None
@@ -22128,6 +22178,7 @@ impl TraitSignerPublicKey for EmbeddedMosaicDefinitionTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Change the total supply of a mosaic (V1, latest).
 //name: MosaicSupplyChangeTransactionV1
 //disposition: None
@@ -22562,6 +22613,7 @@ impl TraitSignature for MosaicSupplyChangeTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for MosaicSupplyChangeTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -22570,6 +22622,7 @@ impl TraitSignerPublicKey for MosaicSupplyChangeTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of MosaicSupplyChangeTransaction (V1, latest).
 //name: EmbeddedMosaicSupplyChangeTransactionV1
 //disposition: None
@@ -22939,6 +22992,7 @@ impl TraitSignerPublicKey for EmbeddedMosaicSupplyChangeTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Revoke mosaic (V1, latest).
 //name: MosaicSupplyRevocationTransactionV1
 //disposition: None
@@ -23351,6 +23405,7 @@ impl TraitSignature for MosaicSupplyRevocationTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for MosaicSupplyRevocationTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -23359,6 +23414,7 @@ impl TraitSignerPublicKey for MosaicSupplyRevocationTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of MosaicSupplyRevocationTransaction (V1, latest).
 //name: EmbeddedMosaicSupplyRevocationTransactionV1
 //disposition: None
@@ -23706,6 +23762,7 @@ impl TraitSignerPublicKey for EmbeddedMosaicSupplyRevocationTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Create or modify a [multi-signature](/concepts/multisig-account.html) account (V1, latest).
 ///This transaction allows you to: - Transform a regular account into a multisig account. - Change the configurable properties of a multisig account. - Add or delete cosignatories from a multisig account (removing all cosignatories turns a multisig account into a regular account again).
 //name: MultisigAccountModificationTransactionV1
@@ -24294,6 +24351,7 @@ impl TraitSignature for MultisigAccountModificationTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for MultisigAccountModificationTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -24302,6 +24360,7 @@ impl TraitSignerPublicKey for MultisigAccountModificationTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of MultisigAccountModificationTransaction (V1, latest).
 //name: EmbeddedMultisigAccountModificationTransactionV1
 //disposition: None
@@ -24824,6 +24883,7 @@ impl TraitSignerPublicKey for EmbeddedMultisigAccountModificationTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Attach or detach a [namespace](/concepts/namespace.html) (alias) to an account address (V1, latest).
 ///A namespace can be assigned to any account present in the network (this is, an account which has received at least one transaction).
 //name: AddressAliasTransactionV1
@@ -25259,6 +25319,7 @@ impl TraitSignature for AddressAliasTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for AddressAliasTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -25267,6 +25328,7 @@ impl TraitSignerPublicKey for AddressAliasTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of AddressAliasTransaction (V1, latest).
 //name: EmbeddedAddressAliasTransactionV1
 //disposition: None
@@ -25636,6 +25698,7 @@ impl TraitSignerPublicKey for EmbeddedAddressAliasTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Attach or detach a [namespace](/concepts/namespace.html) to a Mosaic.(V1, latest)
 ///Setting an alias to a mosaic is only possible if the account announcing this transaction has also created the namespace and the mosaic involved.
 //name: MosaicAliasTransactionV1
@@ -26071,6 +26134,7 @@ impl TraitSignature for MosaicAliasTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for MosaicAliasTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -26079,6 +26143,7 @@ impl TraitSignerPublicKey for MosaicAliasTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of MosaicAliasTransaction (V1, latest).
 //name: EmbeddedMosaicAliasTransactionV1
 //disposition: None
@@ -26448,6 +26513,7 @@ impl TraitSignerPublicKey for EmbeddedMosaicAliasTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Register (or renew a registration for) a [namespace](/concepts/namespace.html) (V1, latest).
 ///Namespaces help keep assets organized.
 //name: NamespaceRegistrationTransactionV1
@@ -26993,6 +27059,7 @@ impl TraitSignature for NamespaceRegistrationTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for NamespaceRegistrationTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -27001,6 +27068,7 @@ impl TraitSignerPublicKey for NamespaceRegistrationTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of NamespaceRegistrationTransaction (V1, latest).
 //name: EmbeddedNamespaceRegistrationTransactionV1
 //disposition: None
@@ -27480,6 +27548,7 @@ impl TraitSignerPublicKey for EmbeddedNamespaceRegistrationTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Enumeration of account restriction flags.
 //name: AccountRestrictionFlags
 //base: <class 'catparser.ast.FixedSizeInteger'>
@@ -28171,6 +28240,7 @@ impl TraitSignature for AccountAddressRestrictionTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for AccountAddressRestrictionTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -28179,6 +28249,7 @@ impl TraitSignerPublicKey for AccountAddressRestrictionTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of AccountAddressRestrictionTransaction (V1, latest).
 //name: EmbeddedAccountAddressRestrictionTransactionV1
 //disposition: None
@@ -28667,6 +28738,7 @@ impl TraitSignerPublicKey for EmbeddedAccountAddressRestrictionTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Allow or block incoming transactions containing a given set of mosaics (V1, latest).
 //name: AccountMosaicRestrictionTransactionV1
 //disposition: None
@@ -29220,6 +29292,7 @@ impl TraitSignature for AccountMosaicRestrictionTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for AccountMosaicRestrictionTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -29228,6 +29301,7 @@ impl TraitSignerPublicKey for AccountMosaicRestrictionTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of AccountMosaicRestrictionTransaction (V1, latest).
 //name: EmbeddedAccountMosaicRestrictionTransactionV1
 //disposition: None
@@ -29716,6 +29790,7 @@ impl TraitSignerPublicKey for EmbeddedAccountMosaicRestrictionTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Allow or block outgoing transactions depending on their transaction type (V1, latest).
 //name: AccountOperationRestrictionTransactionV1
 //disposition: None
@@ -30269,6 +30344,7 @@ impl TraitSignature for AccountOperationRestrictionTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for AccountOperationRestrictionTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -30277,6 +30353,7 @@ impl TraitSignerPublicKey for AccountOperationRestrictionTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of AccountOperationRestrictionTransaction (V1, latest).
 //name: EmbeddedAccountOperationRestrictionTransactionV1
 //disposition: None
@@ -30765,6 +30842,7 @@ impl TraitSignerPublicKey for EmbeddedAccountOperationRestrictionTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Set address specific rules to transfer a restrictable mosaic (V1, latest).
 //name: MosaicAddressRestrictionTransactionV1
 //disposition: None
@@ -31261,6 +31339,7 @@ impl TraitSignature for MosaicAddressRestrictionTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for MosaicAddressRestrictionTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -31269,6 +31348,7 @@ impl TraitSignerPublicKey for MosaicAddressRestrictionTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of MosaicAddressRestrictionTransaction (V1, latest).
 //name: EmbeddedMosaicAddressRestrictionTransactionV1
 //disposition: None
@@ -31700,6 +31780,7 @@ impl TraitSignerPublicKey for EmbeddedMosaicAddressRestrictionTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 //name: MosaicRestrictionKey
 //linked_type: <class 'catparser.ast.FixedSizeInteger'>
 //    short_name: uint64
@@ -32365,6 +32446,7 @@ impl TraitSignature for MosaicGlobalRestrictionTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for MosaicGlobalRestrictionTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -32373,6 +32455,7 @@ impl TraitSignerPublicKey for MosaicGlobalRestrictionTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Embedded version of MosaicGlobalRestrictionTransaction (V1, latest).
 //name: EmbeddedMosaicGlobalRestrictionTransactionV1
 //disposition: None
@@ -32848,6 +32931,7 @@ impl TraitSignerPublicKey for EmbeddedMosaicGlobalRestrictionTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 ///Send mosaics and messages between two accounts (V1, latest).
 //name: TransferTransactionV1
 //disposition: None
@@ -33426,6 +33510,7 @@ impl TraitSignature for TransferTransactionV1 {
         self.signature = signature;
     }
 }
+
 impl TraitSignerPublicKey for TransferTransactionV1 {
     fn get_signer_public_key(&self) -> &PublicKey {
         &self.signer_public_key
@@ -33434,6 +33519,7 @@ impl TraitSignerPublicKey for TransferTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 impl TraitMessage for TransferTransactionV1 {
     fn get_message(&self) -> &Vec<u8> {
         &self.message
@@ -33442,6 +33528,7 @@ impl TraitMessage for TransferTransactionV1 {
         self.message = message;
     }
 }
+
 ///Embedded version of TransferTransaction (V1, latest).
 //name: EmbeddedTransferTransactionV1
 //disposition: None
@@ -33955,6 +34042,7 @@ impl TraitSignerPublicKey for EmbeddedTransferTransactionV1 {
         self.signer_public_key = signer_public_key;
     }
 }
+
 impl TraitMessage for EmbeddedTransferTransactionV1 {
     fn get_message(&self) -> &Vec<u8> {
         &self.message

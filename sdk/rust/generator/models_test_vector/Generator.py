@@ -64,10 +64,10 @@ def find_astmodel(astmodel_name, astmodels):
     return astmodel
     
 def modify_public_key_of_sturct(payload, astmodel_of_struct, json_of_struct: list, type_dict):
-    def generate_publickey(privatekey):
+    def generate_publickey(publickey: str):
         from nacl.signing import SigningKey
-        import nacl.utils
-        private_key = SigningKey(bytes.fromhex(privatekey))
+        import nacl
+        private_key = SigningKey(bytes.fromhex(publickey))
         return private_key.verify_key.encode(encoder=nacl.encoding.HexEncoder).decode('utf-8').upper()
 
     def modify_public_key_of_byte_array(payload, astmodel_of_byte_array, value):

@@ -3,7 +3,6 @@ from catparser.DisplayType import DisplayType
 from generator import constant
 from generator import util
 
-
 def generate_struct(astmodel):
     struct_name = astmodel.name
     ret = '// generated from generate_struct()\n'
@@ -27,6 +26,7 @@ def generate_struct(astmodel):
     for f in astmodel.fields:
         if not f.is_const:
             continue
+        
         if type(f.value) == str:
             ret += f'pub const {f.name}: {f.field_type} = {f.field_type}::{f.value};'
         elif type(f.value) == int:
@@ -38,6 +38,7 @@ def generate_struct(astmodel):
         const = util.constantized_by(f.name, astmodel)
         if not const:
             continue
+        
         if const in [f.name for f in astmodel.fields]:
             ret += f'pub fn {f.name}(&self) -> {f.field_type} {{ Self::{const} }}'
         else:
@@ -50,6 +51,7 @@ def generate_struct(astmodel):
             continue
         if util.skip_in_constructor(f):
             continue
+        
         if type(f.field_type) == catparser.ast.Array:
             ret += f'{f.name}: Vec<{f.field_type.element_type}>,'
         else:
@@ -62,6 +64,7 @@ def generate_struct(astmodel):
         if util.skip_in_constructor(f):
             ret += f'{f.name}: {f.field_type}::default(),'
             continue
+        
         ret += f'{f.name},'
     ret += '}'
     ret += '}'
@@ -71,6 +74,7 @@ def generate_struct(astmodel):
     for f in astmodel.fields:
         if not util.field_is_member_of_astmodel(f, astmodel):
             continue
+        
         if type(f.field_type) == catparser.ast.Array:
             ret += f'{f.name}: Vec::new(),'
         elif type(f.value) == catparser.ast.Conditional or f.value is None:
@@ -215,9 +219,9 @@ def generate_struct(astmodel):
         if f.is_const:
             continue
         fn = f.name
-
         ft = f.field_type
         fs = f.size
+        
         if fn == 'size' or util.constantized_by(f.name, astmodel):
             if type(ft) == catparser.ast.FixedSizeInteger:
                 ret += f"let {fn} = (self.{fn}() as {ft}).to_le_bytes();"
@@ -282,7 +286,7 @@ def generate_struct(astmodel):
     ret += '}'
     ret += '}'
     
-    ## trait
+    ## trait for SIGN
     for f in astmodel.fields:
         fn = f.name
         if fn not in constant.TRAITS_FOR_SIGN:
@@ -292,9 +296,11 @@ def generate_struct(astmodel):
         else:
             ft = f.field_type
         
-        ret += f'impl Trait{util.snake_to_camel(fn)} for {struct_name} {{'
-        ret += f'fn get_{fn}(&self) -> &{ft} {{ &self.{fn} }}'
-        ret += f'fn set_{fn}(&mut self, {fn}: {ft}) {{ self.{fn} = {fn}; }}'
-        ret += f'}}'
+        ret += f'''
+            impl Trait{util.snake_to_camel(fn)} for {struct_name} {{
+            fn get_{fn}(&self) -> &{ft} {{ &self.{fn} }}
+            fn set_{fn}(&mut self, {fn}: {ft}) {{ self.{fn} = {fn}; }}
+            }}
+        '''
         
     return ret.replace('type', 'type_').replace('_type_', '_type')

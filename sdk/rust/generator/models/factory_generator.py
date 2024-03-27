@@ -20,7 +20,8 @@ def generate_factory(factory, products):
         ret += f'Self::{p.name}(x) => x.size(),'
     ret += '}}'
     
-    ret += 'pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {'
+    ret += 'pub fn deserialize(payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {'
+    ret += 'let mut _tmp_payload = payload;'
     for f in factory.fields:
         if f.is_const:
             continue
@@ -32,12 +33,12 @@ def generate_factory(factory, products):
         ft = f.field_type
         fs = f.size
         if f.name == 'size':
-            ret += f'if payload.len() < {fs} {{ return Err(SymbolError::SizeError{{expect: vec![{fs}], real: payload.len()}}) }}'
+            ret += f'if _tmp_payload.len() < {fs} {{ return Err(SymbolError::SizeError{{expect: vec![{fs}], real: _tmp_payload.len()}}) }}'
         if type(ft) == catparser.ast.FixedSizeInteger:
-            ret += f'let {fn} = {ft}::from_le_bytes(payload[..{fs}].try_into()?);'
-            ret += f'payload = &payload[{fs}..];'
+            ret += f'let _{fn} = {ft}::from_le_bytes(_tmp_payload[..{fs}].try_into()?);'
+            ret += f'_tmp_payload = &_tmp_payload[{fs}..];'
         elif type(ft) == catparser.ast.Array:
-            ret += f'let mut {fn} = Vec::new();'
+            ret += f'let mut _{fn} = Vec::new();'
             ret += f'for _ in 0..{fs} {{'
             
             fte = ft.element_type
@@ -45,92 +46,41 @@ def generate_factory(factory, products):
                 ftes = fte.size
                 # ften = fte.name
                 ret += f'let mut bytes = [0u8; {ftes}];'
-                ret += f'bytes.copy_from_slice(&payload[..{ftes}]);'
+                ret += f'bytes.copy_from_slice(&_tmp_payload[..{ftes}]);'
                 ret += f'let element = {fte}::from_le_bytes(bytes);'
-                ret += f'payload = &payload[{ftes}..];'
-                ret += f'{fn}.push(element);'
+                ret += f'_tmp_payload = &_tmp_payload[{ftes}..];'
+                ret += f'_{fn}.push(element);'
             elif type(fte) == str:
                 ret += f'let element;'
-                ret += f'(element, payload) = {fte}::deserialize(payload)?;'
-                ret += f'{fn}.push(element);'
+                ret += f'(element, _tmp_payload) = {fte}::deserialize(_tmp_payload)?;'
+                ret += f'_{fn}.push(element);'
             else:
                 raise "unexpected"
             ret += '}'
         else:
-            ret += f'let {fn};'
-            ret += f'({fn}, payload) = {ft}::deserialize(payload)?;'
+            ret += f'let _{fn};'
+            ret += f'(_{fn}, _tmp_payload) = {ft}::deserialize(_tmp_payload)?;'
         
         if f.name == 'size':
-            ret += f'if size as usize > payload.len() + {fs} {{ return Err(SymbolError::SizeError{{expect: vec![size as usize], real: payload.len() + {fs} }}); }}'
+            ret += f'if _size as usize > _tmp_payload.len() + {fs} {{ return Err(SymbolError::SizeError{{expect: vec![_size as usize], real: _tmp_payload.len() + {fs} }}); }}'
         if f.is_reserved:
-            ret += f'if {f.name} != 0 {{ return Err(SymbolError::ReservedIsNotZeroError({f.name} as u32)); }}'
+            ret += f'if _{fn} != 0 {{ return Err(SymbolError::ReservedIsNotZeroError(_{fn} as u32)); }}'
         if util.constantized_by(f.name, factory):
             pass
         
     common_field_name_list = [f.name for f in factory.fields]
     ret += 'match ('
     for d in factory.discriminator:
-        ret += f'{d}, '
+        ret += f'_{d}, '
     ret += ') {'
     for p in products:
         ret += '('
         for d in factory.discriminator:
             ret += f'{p.name}::{util.constantized_by(d, p)}, '
         ret += ') => {'
-        for f in p.fields:
-            if f.name in common_field_name_list:
-                continue
-            if f.is_const:
-                continue
-            fn = f.name
-            if util.constantized_by(f.name, p):
-                fn = '_' + fn
-            
-            ft = f.field_type
-            fs = f.size
-            if f.name == 'size':
-                ret += f'if payload.len() < {fs} {{ return Err(SymbolError::SizeError{{expect: vec![{fs}], real: payload.len()}}) }}'
-            if type(ft) == catparser.ast.FixedSizeInteger:
-                ret += f'let {fn} = {ft}::from_le_bytes(payload[..{fs}].try_into()?);'
-                ret += f'payload = &payload[{fs}..];'
-            elif type(ft) == catparser.ast.Array:
-                ret += f'let mut {fn} = Vec::new();'
-                ret += f'for _ in 0..{fs} {{'
-                
-                fte = ft.element_type
-                if type(fte) == catparser.ast.FixedSizeInteger:
-                    ftes = fte.size
-                    # ften = fte.name
-                    ret += f'let mut bytes = [0u8; {ftes}];'
-                    ret += f'bytes.copy_from_slice(&payload[..{ftes}]);'
-                    ret += f'let element = {fte}::from_le_bytes(bytes);'
-                    ret += f'payload = &payload[{ftes}..];'
-                    ret += f'{fn}.push(element);'
-                elif type(fte) == str:
-                    ret += f'let element;'
-                    ret += f'(element, payload) = {fte}::deserialize(payload)?;'
-                    ret += f'{fn}.push(element);'
-                else:
-                    raise "unexpected"
-                ret += '}'
-            else:
-                ret += f'let {fn};'
-                ret += f'({fn}, payload) = {ft}::deserialize(payload)?;'
-            
-            if f.name == 'size':
-                ret += f'if size as usize >= payload.len() + {fs} {{ return Err(SymbolError::SizeError{{expect: vec![size as usize], real: payload.len() + {fs} }}); }}'
-            if f.is_reserved:
-                ret += f'if {f.name} != 0 {{ return Err(SymbolError::ReservedIsNotZeroError({f.name} as u32)); }}'
-            if util.constantized_by(f.name, factory):
-                pass
-        ret += f'let self_ = {p.name} {{'
-        for f in p.fields:
-            if not util.is_member(f, p):
-                continue
-            ret += f'{f.name},'
-        ret += '};'
-            
-        ret += f'Ok((Self::{p.name}(self_), payload))'    
+        
+        ret += f'let (product, payload) = {p.name}::deserialize(payload)?;'
+        ret += f'Ok((Self::{p.name}(product), payload))'
         
         ret += '},'
     ret += '('

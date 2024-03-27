@@ -86,6 +86,13 @@ def generate_struct(ast_model):
     for f in ast_model.fields:
         if f.is_const:
             continue
+        if f.is_conditional:
+            linked_field_name = f.value.linked_field_name
+            linked_field_ast_model = [f for f in ast_model.fields if f.name == linked_field_name][0]
+            linked_field_type = linked_field_ast_model.field_type
+            linked_field_value = f.value.value
+            ret += f'if self.{linked_field_name} == {linked_field_type}::{linked_field_value} {{'
+    
         if f.size is None:
             if util.is_method(f, ast_model):
                 ret += f'size += self.{f.name}().size();'
@@ -111,10 +118,14 @@ def generate_struct(ast_model):
             ret += f'size += {f.size};'
         else:
             raise "unexpected"
+        
+        if f.is_conditional:
+            ret += '}'
     ret += 'size'
     ret += '}'
 
     ## deserialize
+    was_conditional_list = []
     ret += 'pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {'
     ret += '#[allow(unused)] let initial_payload_len = payload.len();'
     for f in ast_model.fields:
@@ -128,6 +139,13 @@ def generate_struct(ast_model):
         fs = f.size
         if f.name == 'size':
             ret += f'if payload.len() < {fs} {{ return Err(SymbolError::SizeError{{expect: vec![{fs}], real: payload.len()}}) }}'
+        # if f.is_conditional:
+        #     linked_field_name = f.value.linked_field_name
+        #     linked_field_ast_model = [f for f in ast_model.fields if f.name == linked_field_name][0]
+        #     linked_field_type = linked_field_ast_model.field_type
+        #     linked_field_value = f.value.value
+        #     ret += f'if self.{linked_field_name} == {linked_field_type}::{linked_field_value} {{'    
+        
         if type(ft) == catparser.ast.FixedSizeInteger:
             ret += f'let {fn} = {ft}::from_le_bytes(payload[..{fs}].try_into()?);'
             ret += f'payload = &payload[{fs}..];'
@@ -160,7 +178,15 @@ def generate_struct(ast_model):
             
         else:
             ret += f'let {fn};'
-            ret += f'({fn}, payload) = {ft}::deserialize(payload)?;'
+            if f.is_conditional:
+                linked_field_name = f.value.linked_field_name
+                if linked_field_name not in was_conditional_list:
+                    ret += f'let payload_for_conditional = &payload[..{ft}::SIZE];'
+                    ret += f'payload = &payload[{ft}::SIZE..];'
+                    was_conditional_list.append(linked_field_name)
+                ret += f'({fn}, _) = {ft}::deserialize(payload_for_conditional)?;'
+            else:
+                ret += f'({fn}, payload) = {ft}::deserialize(payload)?;'
         
         if f.name == 'size':
             ret += f'if size as usize > payload.len() + {fs} {{ return Err(SymbolError::SizeError{{expect: vec![size as usize], real: payload.len() + {fs} }}); }}'
@@ -168,6 +194,9 @@ def generate_struct(ast_model):
             ret += f'if {f.name} != 0 {{ return Err(SymbolError::ReservedIsNotZeroError({f.name} as u32)); }}'
         if util.constantized_by(f.name, ast_model):
             pass
+        
+        # if f.is_conditional:
+        #     ret += '}'
     
     ret += f'let self_ = Self {{'
     for f in ast_model.fields:
@@ -222,7 +251,21 @@ def generate_struct(ast_model):
         elif type(ft) == catparser.ast.FixedSizeInteger:
             ret += f'let {fn} = self.{fn}.to_le_bytes();'
         else:
-            ret += f'let {fn} = self.{fn}.serialize();'
+            if f.is_conditional:
+            # ret += f'if self.{linked_field_name} == {linked_field_type}::{linked_field_value} {{'
+                linked_field_name = f.value.linked_field_name
+                linked_field_ast_model = [f for f in ast_model.fields if f.name == linked_field_name][0]
+                linked_field_type = linked_field_ast_model.field_type
+                linked_field_value = f.value.value
+                ret += f'''
+                    let {fn} = if self.{linked_field_name} == {linked_field_type}::{linked_field_value} {{
+                        self.{fn}.serialize()
+                    }} else {{
+                        Vec::new()
+                    }};
+                '''
+            else:
+                ret += f'let {fn} = self.{fn}.serialize();'
             
     ret += '['
     for f in ast_model.fields:

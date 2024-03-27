@@ -105,8 +105,8 @@ def parse_struct_rhs(payload, ast_model_of_struct, json_of_struct: list, type_di
     return payload
 
 def parse_byte_array_rhs(payload, ast_model_of_byte_array, value):
-    if "PublicKey" in ast_model_of_byte_array.name:
-        old_publickey = str(value)
+    if ast_model_of_byte_array.name.endswith("PublicKey"):
+        old_publickey = str(value).upper()
         new_publickey = generate_publickey(old_publickey)
         payload = payload.replace(old_publickey, new_publickey)
     return payload

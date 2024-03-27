@@ -11903,13 +11903,12 @@ impl AggregateCompleteTransactionV1 {
             as u32)
             .to_le_bytes();
         let aggregate_transaction_header_reserved_1 = 0u32.to_le_bytes();
-        let mut transactions: Vec<u8> = self
-            .transactions
-            .iter()
-            .flat_map(|x| x.serialize())
-            .collect();
-        let transactions_tmp_size = transactions.len();
-        transactions.extend_from_slice(&vec![0; (8 - (transactions_tmp_size % 8)) % 8]);
+        let mut transactions = Vec::new();
+        for element in &self.transactions {
+            transactions.extend_from_slice(&element.serialize());
+            let len = transactions.len();
+            transactions.resize((len + 7) & !7, 0);
+        }
         let cosignatures: Vec<u8> = self
             .cosignatures
             .iter()
@@ -12451,18 +12450,18 @@ impl AggregateCompleteTransactionV2 {
             as u32)
             .to_le_bytes();
         let aggregate_transaction_header_reserved_1 = 0u32.to_le_bytes();
-        let mut transactions: Vec<u8> = self
-            .transactions
-            .iter()
-            .flat_map(|x| x.serialize())
-            .collect();
-        let transactions_tmp_size = transactions.len();
-        transactions.extend_from_slice(&vec![0; (8 - (transactions_tmp_size % 8)) % 8]);
+        let mut transactions = Vec::new();
+        for element in &self.transactions {
+            transactions.extend_from_slice(&element.serialize());
+            let len = transactions.len();
+            transactions.resize((len + 7) & !7, 0);
+        }
         let cosignatures: Vec<u8> = self
             .cosignatures
             .iter()
             .flat_map(|x| x.serialize())
             .collect();
+        println!("{:?}", &self.transactions[1].serialize());
         [
             size.iter(),
             verifiable_entity_header_reserved_1.iter(),
@@ -17446,7 +17445,7 @@ impl SecretProofTransactionV1 {
         let mut proof = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < proof_size as usize {
+        for _ in 0..proof_size {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
@@ -17899,7 +17898,7 @@ impl EmbeddedSecretProofTransactionV1 {
         let mut proof = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < proof_size as usize {
+        for _ in 0..proof_size {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
@@ -18405,7 +18404,7 @@ impl AccountMetadataTransactionV1 {
         let mut value = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < value_size as usize {
+        for _ in 0..value_size {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
@@ -18870,7 +18869,7 @@ impl EmbeddedAccountMetadataTransactionV1 {
         let mut value = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < value_size as usize {
+        for _ in 0..value_size {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
@@ -19394,7 +19393,7 @@ impl MosaicMetadataTransactionV1 {
         let mut value = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < value_size as usize {
+        for _ in 0..value_size {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
@@ -19881,7 +19880,7 @@ impl EmbeddedMosaicMetadataTransactionV1 {
         let mut value = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < value_size as usize {
+        for _ in 0..value_size {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
@@ -20408,7 +20407,7 @@ impl NamespaceMetadataTransactionV1 {
         let mut value = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < value_size as usize {
+        for _ in 0..value_size {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
@@ -20895,7 +20894,7 @@ impl EmbeddedNamespaceMetadataTransactionV1 {
         let mut value = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < value_size as usize {
+        for _ in 0..value_size {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
@@ -24185,7 +24184,7 @@ impl MultisigAccountModificationTransactionV1 {
         let mut address_additions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < address_additions_count as usize {
+        for _ in 0..address_additions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             address_additions.push(element);
@@ -24193,7 +24192,7 @@ impl MultisigAccountModificationTransactionV1 {
         let mut address_deletions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < address_deletions_count as usize {
+        for _ in 0..address_deletions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             address_deletions.push(element);
@@ -24724,7 +24723,7 @@ impl EmbeddedMultisigAccountModificationTransactionV1 {
         let mut address_additions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < address_additions_count as usize {
+        for _ in 0..address_additions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             address_additions.push(element);
@@ -24732,7 +24731,7 @@ impl EmbeddedMultisigAccountModificationTransactionV1 {
         let mut address_deletions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < address_deletions_count as usize {
+        for _ in 0..address_deletions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             address_deletions.push(element);
@@ -26890,7 +26889,7 @@ impl NamespaceRegistrationTransactionV1 {
         let mut name = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < name_size as usize {
+        for _ in 0..name_size {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
@@ -27386,7 +27385,7 @@ impl EmbeddedNamespaceRegistrationTransactionV1 {
         let mut name = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < name_size as usize {
+        for _ in 0..name_size {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
@@ -28065,7 +28064,7 @@ impl AccountAddressRestrictionTransactionV1 {
         let mut restriction_additions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < restriction_additions_count as usize {
+        for _ in 0..restriction_additions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             restriction_additions.push(element);
@@ -28073,7 +28072,7 @@ impl AccountAddressRestrictionTransactionV1 {
         let mut restriction_deletions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < restriction_deletions_count as usize {
+        for _ in 0..restriction_deletions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             restriction_deletions.push(element);
@@ -28570,7 +28569,7 @@ impl EmbeddedAccountAddressRestrictionTransactionV1 {
         let mut restriction_additions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < restriction_additions_count as usize {
+        for _ in 0..restriction_additions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             restriction_additions.push(element);
@@ -28578,7 +28577,7 @@ impl EmbeddedAccountAddressRestrictionTransactionV1 {
         let mut restriction_deletions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < restriction_deletions_count as usize {
+        for _ in 0..restriction_deletions_count as usize {
             let element;
             (element, payload) = UnresolvedAddress::deserialize(payload)?;
             restriction_deletions.push(element);
@@ -29114,7 +29113,7 @@ impl AccountMosaicRestrictionTransactionV1 {
         let mut restriction_additions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < restriction_additions_count as usize {
+        for _ in 0..restriction_additions_count as usize {
             let element;
             (element, payload) = UnresolvedMosaicId::deserialize(payload)?;
             restriction_additions.push(element);
@@ -29122,7 +29121,7 @@ impl AccountMosaicRestrictionTransactionV1 {
         let mut restriction_deletions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < restriction_deletions_count as usize {
+        for _ in 0..restriction_deletions_count as usize {
             let element;
             (element, payload) = UnresolvedMosaicId::deserialize(payload)?;
             restriction_deletions.push(element);
@@ -29619,7 +29618,7 @@ impl EmbeddedAccountMosaicRestrictionTransactionV1 {
         let mut restriction_additions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < restriction_additions_count as usize {
+        for _ in 0..restriction_additions_count as usize {
             let element;
             (element, payload) = UnresolvedMosaicId::deserialize(payload)?;
             restriction_additions.push(element);
@@ -29627,7 +29626,7 @@ impl EmbeddedAccountMosaicRestrictionTransactionV1 {
         let mut restriction_deletions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < restriction_deletions_count as usize {
+        for _ in 0..restriction_deletions_count as usize {
             let element;
             (element, payload) = UnresolvedMosaicId::deserialize(payload)?;
             restriction_deletions.push(element);
@@ -30163,7 +30162,7 @@ impl AccountOperationRestrictionTransactionV1 {
         let mut restriction_additions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < restriction_additions_count as usize {
+        for _ in 0..restriction_additions_count as usize {
             let element;
             (element, payload) = TransactionType::deserialize(payload)?;
             restriction_additions.push(element);
@@ -30171,7 +30170,7 @@ impl AccountOperationRestrictionTransactionV1 {
         let mut restriction_deletions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < restriction_deletions_count as usize {
+        for _ in 0..restriction_deletions_count as usize {
             let element;
             (element, payload) = TransactionType::deserialize(payload)?;
             restriction_deletions.push(element);
@@ -30668,7 +30667,7 @@ impl EmbeddedAccountOperationRestrictionTransactionV1 {
         let mut restriction_additions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < restriction_additions_count as usize {
+        for _ in 0..restriction_additions_count as usize {
             let element;
             (element, payload) = TransactionType::deserialize(payload)?;
             restriction_additions.push(element);
@@ -30676,7 +30675,7 @@ impl EmbeddedAccountOperationRestrictionTransactionV1 {
         let mut restriction_deletions = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < restriction_deletions_count as usize {
+        for _ in 0..restriction_deletions_count as usize {
             let element;
             (element, payload) = TransactionType::deserialize(payload)?;
             restriction_deletions.push(element);
@@ -33323,7 +33322,7 @@ impl TransferTransactionV1 {
         let mut mosaics = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < mosaics_count as usize {
+        for _ in 0..mosaics_count {
             let element;
             (element, payload) = UnresolvedMosaic::deserialize(payload)?;
             mosaics.push(element);
@@ -33331,7 +33330,7 @@ impl TransferTransactionV1 {
         let mut message = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < message_size as usize {
+        for _ in 0..message_size {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);
@@ -33861,7 +33860,7 @@ impl EmbeddedTransferTransactionV1 {
         let mut mosaics = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < mosaics_count as usize {
+        for _ in 0..mosaics_count {
             let element;
             (element, payload) = UnresolvedMosaic::deserialize(payload)?;
             mosaics.push(element);
@@ -33869,7 +33868,7 @@ impl EmbeddedTransferTransactionV1 {
         let mut message = Vec::new();
         #[allow(unused)]
         let tmp_payload_len = payload.len();
-        while tmp_payload_len - payload.len() < message_size as usize {
+        for _ in 0..message_size {
             let mut bytes = [0u8; 1];
             bytes.copy_from_slice(&payload[..1]);
             let element = u8::from_le_bytes(bytes);

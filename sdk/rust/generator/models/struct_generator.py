@@ -153,12 +153,17 @@ def generate_struct(ast_model):
             ret += f'let mut {fn} = Vec::new();'
             alignment = ft.alignment
             ret += f'#[allow(unused)] let tmp_payload_len = payload.len();'
+            fte = ft.element_type
             
             if ft.is_expandable:
                 ret += f'while initial_payload_len - payload.len() < size as usize {{'
             else:
-                ret += f'while tmp_payload_len - payload.len() < {fs} as usize {{'
-            fte = ft.element_type
+                print(f.name, ft, str(fte), "\n")
+                if str(fte) != 'u8':
+                    ret += f'while tmp_payload_len - payload.len() < {fs} as usize {{'
+                else:
+                    ret += f'for _ in 0..{fs} {{'
+            
             if type(fte) == catparser.ast.FixedSizeInteger:
                 ftes = fte.size
                 ret += f'let mut bytes = [0u8; {ftes}];'
@@ -244,8 +249,8 @@ def generate_struct(ast_model):
             else:
                 if ft.is_expandable or type(fte) == str:
                     ret += f'let mut {fn}: Vec<u8> = self.{fn}.iter().flat_map(|x| x.serialize()).collect();'
-                    ret += f'let {fn}_tmp_size = {fn}.len();'
-                    ret += f'{fn}.extend_from_slice(&vec![0; ({alignment} - ({fn}_tmp_size % {alignment})) % {alignment}]);'
+                    ret += f'let tmp_{fn}_size = {fn}.len();'
+                    ret += f'{fn}.extend_from_slice(&vec![0; ({alignment} - (tmp_{fn}_size % {alignment})) % {alignment}]);'
                 else:
                     raise "unexpected"
         elif type(ft) == catparser.ast.FixedSizeInteger:

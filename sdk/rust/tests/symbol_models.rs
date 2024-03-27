@@ -1,8 +1,5 @@
-#[cfg(not(feature = "private_network"))]
-#[allow(unused)]
 mod symbol_models_test {
     use hex::decode;
-    use std::str::FromStr;
     use symbol::symbol::prelude::*;
     #[test]
     #[allow(non_snake_case)]

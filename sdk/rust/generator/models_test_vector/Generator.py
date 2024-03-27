@@ -20,7 +20,7 @@ class Generator:
 def generate_files(ast_models, output_path: Path):
     type_dict = get_type_dict(ast_models)
     
-    output = '#[cfg(not(feature = "private_network"))] #[allow(unused)] mod symbol_models_test {use hex::decode; use std::str::FromStr; use symbol::symbol::prelude::*;'
+    output = 'mod symbol_models_test {use hex::decode;use symbol::symbol::prelude::*;'
     
     # transaction
     with open("../../tests/vectors/symbol/models/transactions.json") as f:

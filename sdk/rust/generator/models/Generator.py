@@ -29,7 +29,7 @@ def generate_files(ast_models, output_directory: Path):
         output += 'use std::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not};'
         output += 'pub use crate::symbol::models_header::*;\n\n'
 
-        for trait in constant.TRAITS:
+        for trait in constant.TRAITS_FOR_SIGN:
             type = util.get_type_of_trait(trait, ast_models)
             output += f'pub trait Trait{util.snake_to_camel(trait)} {{'
             output += f'fn get_{trait}(&self) -> &{type};'

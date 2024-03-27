@@ -295,7 +295,7 @@ def generate_struct(ast_model):
     ## trait
     for f in ast_model.fields:
         fn = f.name
-        if fn not in constant.TRAITS:
+        if fn not in constant.TRAITS_FOR_SIGN:
             continue
         if type(f.field_type) == catparser.ast.Array:
             ft = f'Vec<{f.field_type.element_type}>'

@@ -43,18 +43,6 @@ impl ExtentionPublicKey for PublicKey {
     }
 }
 
-// pub trait ExtentionVotingPublicKey
-// where
-//     Self: Sized,
-// {
-//     fn from_str(str: &str) -> Result<Self, SymbolError>;
-// }
-// impl ExtentionVotingPublicKey for VotingPublicKey {
-//     fn from_str(str: &str) -> Result<Self, SymbolError> {
-//         Ok(Self::new(hex::decode(str)?.as_slice().try_into()?))
-//     }
-// }
-
 pub trait ExtentionPrivateKey
 where
     Self: Sized,

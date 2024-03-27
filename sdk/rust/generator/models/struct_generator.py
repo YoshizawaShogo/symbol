@@ -155,14 +155,18 @@ def generate_struct(ast_model):
             ret += f'#[allow(unused)] let tmp_payload_len = payload.len();'
             fte = ft.element_type
             
-            if ft.is_expandable:
+            if alignment is not None:
+                if fs == 0:
+                    if ft.is_expandable:
+                        ret += f'while initial_payload_len - payload.len() < size as usize {{'
+                    else:
+                        ret += f'while tmp_payload_len - payload.len() < size as usize {{'
+                else:
+                    ret += f'while tmp_payload_len - payload.len() < {fs} as usize {{'
+            elif ft.is_expandable:
                 ret += f'while initial_payload_len - payload.len() < size as usize {{'
             else:
-                print(f.name, ft, str(fte), "\n")
-                if str(fte) != 'u8':
-                    ret += f'while tmp_payload_len - payload.len() < {fs} as usize {{'
-                else:
-                    ret += f'for _ in 0..{fs} {{'
+                ret += f'for _ in 0..{fs} {{'
             
             if type(fte) == catparser.ast.FixedSizeInteger:
                 ftes = fte.size
@@ -248,9 +252,14 @@ def generate_struct(ast_model):
                     ret += f'let {fn}: Vec<u8> = self.{fn}.iter().flat_map(|x| x.serialize()).collect();'
             else:
                 if ft.is_expandable or type(fte) == str:
-                    ret += f'let mut {fn}: Vec<u8> = self.{fn}.iter().flat_map(|x| x.serialize()).collect();'
-                    ret += f'let tmp_{fn}_size = {fn}.len();'
-                    ret += f'{fn}.extend_from_slice(&vec![0; ({alignment} - (tmp_{fn}_size % {alignment})) % {alignment}]);'
+                    ret += f'''
+                        let mut {fn} = Vec::new();
+                        for x in &self.{fn} {{
+                            {fn}.extend_from_slice(&x.serialize());
+                            let len = {fn}.len();
+                            {fn}.resize((len + {alignment-1}) & !{alignment-1}, 0);
+                        }}
+                    '''
                 else:
                     raise "unexpected"
         elif type(ft) == catparser.ast.FixedSizeInteger:

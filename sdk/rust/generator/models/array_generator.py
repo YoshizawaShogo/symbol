@@ -1,48 +1,35 @@
-import catparser
-from catparser.DisplayType import DisplayType
-
 def generate_bytearray(ast_model):
-    # define variables
-    ret = '// generated from generate_bytearray()\n'
-    name_lower = ast_model.name.lower()
-    value_type = f'[u8; {ast_model.size}]'
-
-    # structure
-    ret += f'pub struct {ast_model.name} (pub {value_type});'
+    name = ast_model.name
+    size = ast_model.size
     
-    # implement
-    ret += 'impl ' + ast_model.name + ' {'
+    ret = f'''
+        // generated from generate_bytearray()
+        pub struct {name}(pub [u8; {size}]);
+        impl {name} {{
+            pub const SIZE: usize = {size};
+            pub fn new({name.lower()}: [u8; {size}]) -> Self {{
+                Self({name.lower()})
+            }}
+            pub fn default() -> Self {{
+                Self([0; {size}])
+            }}
+            pub fn size(&self) -> usize {{
+                Self::SIZE
+            }}
+            pub fn deserialize(payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {{
+                if payload.len() < Self::SIZE {{
+                    return Err(SymbolError::SizeError {{
+                        expect: vec![Self::SIZE],
+                        real: payload.len(),
+                    }});
+                }}
+                let (bytes, rest) = payload.split_at(Self::SIZE);
+                Ok((Self(bytes.try_into()?), rest))
+            }}
+            pub fn serialize(&self) -> Vec<u8> {{
+                self.0.to_vec()
+            }}
+        }}
+    '''
     
-    ## SIZE
-    ret += f'pub const SIZE: usize = {ast_model.size};'
-
-    ## constructor 
-    ret += f'pub fn new({name_lower}: {value_type}) -> Self {{'
-    ret += f'Self({name_lower})'
-    ret += '}'
-    
-    ret += 'pub fn default() -> Self {'
-    ret += f'Self([0; {ast_model.size}])'
-    ret += '}'
-
-    ## size
-    ret += 'pub fn size(&self) -> usize {'
-    ret += 'Self::SIZE'
-    ret += '}'
-
-    ## deserialize
-    ret += 'pub fn deserialize(payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {'
-    ret += 'if payload.len() < Self::SIZE { return Err(SymbolError::SizeError{expect: vec![Self::SIZE], real: payload.len()}) }'
-    ret += 'let (bytes, rest) = payload.split_at(Self::SIZE);'
-    ret += 'Ok((Self(bytes.try_into()?), rest))'
-    ret += '}'
-
-    ## serialize
-    ret += 'pub fn serialize(&self) -> Vec<u8> {'
-    ret += 'self.0.to_vec()'
-    ret += '}'
-    
-    # end
-    ret += '}'
-
     return ret

@@ -8,14 +8,17 @@ pub trait TraitSignature {
     fn get_signature(&self) -> &Signature;
     fn set_signature(&mut self, signature: Signature);
 }
+
 pub trait TraitSignerPublicKey {
     fn get_signer_public_key(&self) -> &PublicKey;
     fn set_signer_public_key(&mut self, signer_public_key: PublicKey);
 }
+
 pub trait TraitMessage {
     fn get_message(&self) -> &Vec<u8>;
     fn set_message(&mut self, message: Vec<u8>);
 }
+
 ///A quantity of mosaics in [absolute units](/concepts/mosaic.html#divisibility).
 ///It can only be positive or zero. Negative quantities must be indicated by other means (See for example MosaicSupplyChangeTransaction and MosaicSupplyChangeAction).
 //name: Amount
@@ -58,6 +61,7 @@ impl Amount {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///A time lapse, expressed in number of blocks.
 //name: BlockDuration
 //linked_type: <class 'catparser.ast.FixedSizeInteger'>
@@ -99,6 +103,7 @@ impl BlockDuration {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///Multiplier applied to the size of a transaction to obtain its fee, in [absolute units](/concepts/mosaic.html#divisibility).
 ///See the [fees documentation](/concepts/fees.html).
 //name: BlockFeeMultiplier
@@ -141,6 +146,7 @@ impl BlockFeeMultiplier {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///How hard it was to harvest this block.
 ///The initial value is 1e14 and it will remain like this as long as blocks are generated every `blockGenerationTargetTime` seconds ([network property](/guides/network/configuring-network-properties.html)).
 ///If blocks start taking more or less time than the configured value, the difficulty will be adjusted (in the range of 1e13 to 1e15) to try to hit the target time.
@@ -185,6 +191,7 @@ impl Difficulty {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///Index of a [finalization](/concepts/block.html#finalization) epoch.
 ///The first epoch is number 1 and contains only the first block (the [Nemesis](/concepts/block.html#block-creation) block). Epoch duration (in blocks) is defined by the `votingSetGrouping` network property.
 //name: FinalizationEpoch
@@ -227,6 +234,7 @@ impl FinalizationEpoch {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///A particular point in time inside a [finalization](/concepts/block.html#finalization) epoch.
 ///See the [Technical Reference](/symbol-technicalref/main.pdf) section 15.2.
 //name: FinalizationPoint
@@ -269,6 +277,7 @@ impl FinalizationPoint {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///Index of a block in the blockchain.
 ///The first block (the [Nemesis](/concepts/block.html#block-creation) block) has height 1 and each subsequent block increases height by 1.
 //name: Height
@@ -311,6 +320,7 @@ impl Height {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///[Importance score](/concepts/consensus-algorithm.html#importance-score) for an account.
 ///See also ImportanceHeight and ImportanceSnapshot.
 //name: Importance
@@ -353,6 +363,7 @@ impl Importance {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///Block height at which an Importance was calculated.
 //name: ImportanceHeight
 //linked_type: <class 'catparser.ast.FixedSizeInteger'>
@@ -394,6 +405,7 @@ impl ImportanceHeight {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///Either a MosaicId or a NamespaceId.
 ///The **most**-significant bit of the first byte is 0 for MosaicId's and 1 for NamespaceId's.
 //name: UnresolvedMosaicId
@@ -436,6 +448,7 @@ impl UnresolvedMosaicId {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///A [Mosaic](/concepts/mosaic.html) identifier.
 //name: MosaicId
 //linked_type: <class 'catparser.ast.FixedSizeInteger'>
@@ -477,6 +490,7 @@ impl MosaicId {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///Number of milliseconds elapsed since the creation of the [Nemesis](/concepts/block.html#block-creation) block.
 ///The Nemesis block creation time can be found in the `epochAdjustment` field returned by the [/network/properties](/symbol-openapi/v1.0.1/#operation/getNetworkProperties) REST endpoint. This is the number of seconds elapsed since the [UNIX epoch](https://en.wikipedia.org/wiki/Unix_time) and it is always 1615853185 for Symbol's MAINNET.
 //name: Timestamp
@@ -519,6 +533,7 @@ impl Timestamp {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///Either an Address or a NamespaceId.
 ///The **least**-significant bit of the first byte is 0 for Addresses and 1 for NamespaceId's.
 //name: UnresolvedAddress
@@ -530,6 +545,7 @@ impl Timestamp {
 //*is_unsigned: True
 //*size: 24
 #[derive(Debug, Clone, PartialEq, Eq)]
+
 // generated from generate_bytearray()
 pub struct UnresolvedAddress(pub [u8; 24]);
 impl UnresolvedAddress {
@@ -557,6 +573,7 @@ impl UnresolvedAddress {
         self.0.to_vec()
     }
 }
+
 ///An [address](/concepts/cryptography.html#address) identifies an account and is derived from its PublicKey.
 //name: Address
 //linked_type: <class 'catparser.ast.FixedSizeBuffer'>
@@ -567,6 +584,7 @@ impl UnresolvedAddress {
 //*is_unsigned: True
 //*size: 24
 #[derive(Debug, Clone, PartialEq, Eq)]
+
 // generated from generate_bytearray()
 pub struct Address(pub [u8; 24]);
 impl Address {
@@ -594,6 +612,7 @@ impl Address {
         self.0.to_vec()
     }
 }
+
 ///A 32-byte (256 bit) hash.
 ///The exact algorithm is unspecified as it can change depending on where it is used.
 //name: Hash256
@@ -605,6 +624,7 @@ impl Address {
 //*is_unsigned: True
 //*size: 32
 #[derive(Debug, Clone, PartialEq, Eq)]
+
 // generated from generate_bytearray()
 pub struct Hash256(pub [u8; 32]);
 impl Hash256 {
@@ -632,6 +652,7 @@ impl Hash256 {
         self.0.to_vec()
     }
 }
+
 ///A 64-byte (512 bit) hash.
 ///The exact algorithm is unspecified as it can change depending on where it is used.
 //name: Hash512
@@ -643,6 +664,7 @@ impl Hash256 {
 //*is_unsigned: True
 //*size: 64
 #[derive(Debug, Clone, PartialEq, Eq)]
+
 // generated from generate_bytearray()
 pub struct Hash512(pub [u8; 64]);
 impl Hash512 {
@@ -670,6 +692,7 @@ impl Hash512 {
         self.0.to_vec()
     }
 }
+
 ///A quantity of a certain mosaic.
 //name: Mosaic
 //disposition: None
@@ -2435,6 +2458,7 @@ impl From<EmbeddedTransferTransactionV1> for EmbeddedTransaction {
 //*is_unsigned: True
 //*size: 32
 #[derive(Debug, Clone, PartialEq, Eq)]
+
 // generated from generate_bytearray()
 pub struct ProofGamma(pub [u8; 32]);
 impl ProofGamma {
@@ -2462,6 +2486,7 @@ impl ProofGamma {
         self.0.to_vec()
     }
 }
+
 //name: ProofVerificationHash
 //linked_type: <class 'catparser.ast.FixedSizeBuffer'>
 //    size: 16
@@ -2471,6 +2496,7 @@ impl ProofGamma {
 //*is_unsigned: True
 //*size: 16
 #[derive(Debug, Clone, PartialEq, Eq)]
+
 // generated from generate_bytearray()
 pub struct ProofVerificationHash(pub [u8; 16]);
 impl ProofVerificationHash {
@@ -2498,6 +2524,7 @@ impl ProofVerificationHash {
         self.0.to_vec()
     }
 }
+
 //name: ProofScalar
 //linked_type: <class 'catparser.ast.FixedSizeBuffer'>
 //    size: 32
@@ -2507,6 +2534,7 @@ impl ProofVerificationHash {
 //*is_unsigned: True
 //*size: 32
 #[derive(Debug, Clone, PartialEq, Eq)]
+
 // generated from generate_bytearray()
 pub struct ProofScalar(pub [u8; 32]);
 impl ProofScalar {
@@ -2534,6 +2562,7 @@ impl ProofScalar {
         self.0.to_vec()
     }
 }
+
 ///enumeration of block types
 //name: BlockType
 //base: <class 'catparser.ast.FixedSizeInteger'>
@@ -7867,6 +7896,7 @@ impl NamespaceId {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///Enumeration of namespace registration types.
 //name: NamespaceRegistrationType
 //base: <class 'catparser.ast.FixedSizeInteger'>
@@ -20989,6 +21019,7 @@ impl MosaicNonce {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///Enumeration of mosaic property flags.
 //name: MosaicFlags
 //base: <class 'catparser.ast.FixedSizeInteger'>
@@ -31709,6 +31740,7 @@ impl MosaicRestrictionKey {
         self.0.to_le_bytes().to_vec()
     }
 }
+
 ///Enumeration of mosaic restriction types.
 //name: MosaicRestrictionType
 //base: <class 'catparser.ast.FixedSizeInteger'>

@@ -11,6 +11,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountAddressRestrictionTransactionV1_account_address_restriction_single_2() {
@@ -21,6 +22,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountAddressRestrictionTransactionV1_account_address_restriction_aggregate_1() {
@@ -31,6 +33,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountAddressRestrictionTransactionV1_account_address_restriction_aggregate_2() {
@@ -41,6 +44,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountKeyLinkTransactionV1_account_key_link_single_1() {
@@ -51,6 +55,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountKeyLinkTransactionV1_account_key_link_single_2() {
@@ -61,6 +66,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountKeyLinkTransactionV1_account_key_link_aggregate_1() {
@@ -71,6 +77,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountKeyLinkTransactionV1_account_key_link_aggregate_2() {
@@ -81,6 +88,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountMetadataTransactionV1_account_metadata_single_1() {
@@ -91,6 +99,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountMetadataTransactionV1_account_metadata_single_2() {
@@ -101,6 +110,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountMetadataTransactionV1_account_metadata_aggregate_1() {
@@ -111,6 +121,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountMetadataTransactionV1_account_metadata_aggregate_2() {
@@ -121,6 +132,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountMosaicRestrictionTransactionV1_account_mosaic_restriction_single_1() {
@@ -131,6 +143,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountMosaicRestrictionTransactionV1_account_mosaic_restriction_single_2() {
@@ -141,6 +154,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountMosaicRestrictionTransactionV1_account_mosaic_restriction_aggregate_1() {
@@ -151,6 +165,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountMosaicRestrictionTransactionV1_account_mosaic_restriction_aggregate_2() {
@@ -161,6 +176,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountOperationRestrictionTransactionV1_account_operation_restriction_single_1() {
@@ -171,6 +187,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountOperationRestrictionTransactionV1_account_operation_restriction_single_2() {
@@ -181,6 +198,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountOperationRestrictionTransactionV1_account_operation_restriction_aggregate_1() {
@@ -191,6 +209,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AccountOperationRestrictionTransactionV1_account_operation_restriction_aggregate_2() {
@@ -201,6 +220,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AddressAliasTransactionV1_address_alias_single_1() {
@@ -211,6 +231,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AddressAliasTransactionV1_address_alias_single_2() {
@@ -221,6 +242,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AddressAliasTransactionV1_address_alias_aggregate_1() {
@@ -231,6 +253,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AddressAliasTransactionV1_address_alias_aggregate_2() {
@@ -241,6 +264,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AggregateBondedTransactionV1_aggregate_bonded_aggregate_1() {
@@ -251,6 +275,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AggregateBondedTransactionV2_aggregate_bonded_aggregate_2() {
@@ -261,6 +286,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AggregateCompleteTransactionV1_aggregate_complete_aggregate_1() {
@@ -271,6 +297,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn AggregateCompleteTransactionV2_aggregate_complete_aggregate_2() {
@@ -281,6 +308,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn HashLockTransactionV1_hash_lock_single_1() {
@@ -291,6 +319,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn HashLockTransactionV1_hash_lock_aggregate_1() {
@@ -301,6 +330,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicAddressRestrictionTransactionV1_mosaic_address_restriction_single_1() {
@@ -311,6 +341,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicAddressRestrictionTransactionV1_mosaic_address_restriction_aggregate_1() {
@@ -321,6 +352,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicAliasTransactionV1_mosaic_alias_single_1() {
@@ -331,6 +363,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicAliasTransactionV1_mosaic_alias_single_2() {
@@ -341,6 +374,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicAliasTransactionV1_mosaic_alias_aggregate_1() {
@@ -351,6 +385,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicAliasTransactionV1_mosaic_alias_aggregate_2() {
@@ -361,6 +396,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicDefinitionTransactionV1_mosaic_definition_single_1() {
@@ -371,6 +407,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicDefinitionTransactionV1_mosaic_definition_single_2() {
@@ -381,6 +418,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicDefinitionTransactionV1_mosaic_definition_single_3() {
@@ -391,6 +429,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicDefinitionTransactionV1_mosaic_definition_aggregate_1() {
@@ -401,6 +440,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicDefinitionTransactionV1_mosaic_definition_aggregate_2() {
@@ -411,6 +451,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicDefinitionTransactionV1_mosaic_definition_aggregate_3() {
@@ -421,6 +462,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicGlobalRestrictionTransactionV1_mosaic_global_restriction_single_1() {
@@ -431,6 +473,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicGlobalRestrictionTransactionV1_mosaic_global_restriction_single_2() {
@@ -441,6 +484,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicGlobalRestrictionTransactionV1_mosaic_global_restriction_aggregate_1() {
@@ -451,6 +495,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicGlobalRestrictionTransactionV1_mosaic_global_restriction_aggregate_2() {
@@ -461,6 +506,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicMetadataTransactionV1_mosaic_metadata_single_1() {
@@ -471,6 +517,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicMetadataTransactionV1_mosaic_metadata_single_2() {
@@ -481,6 +528,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicMetadataTransactionV1_mosaic_metadata_aggregate_1() {
@@ -491,6 +539,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicMetadataTransactionV1_mosaic_metadata_aggregate_2() {
@@ -501,6 +550,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicSupplyChangeTransactionV1_mosaic_supply_change_single_1() {
@@ -511,6 +561,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicSupplyChangeTransactionV1_mosaic_supply_change_single_2() {
@@ -521,6 +572,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicSupplyChangeTransactionV1_mosaic_supply_change_aggregate_1() {
@@ -531,6 +583,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MosaicSupplyChangeTransactionV1_mosaic_supply_change_aggregate_2() {
@@ -541,6 +594,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MultisigAccountModificationTransactionV1_multisig_account_modification_single_1() {
@@ -551,6 +605,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn MultisigAccountModificationTransactionV1_multisig_account_modification_aggregate_1() {
@@ -561,6 +616,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn NamespaceMetadataTransactionV1_namespace_metadata_single_1() {
@@ -571,6 +627,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn NamespaceMetadataTransactionV1_namespace_metadata_single_2() {
@@ -581,6 +638,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn NamespaceMetadataTransactionV1_namespace_metadata_aggregate_1() {
@@ -591,6 +649,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn NamespaceMetadataTransactionV1_namespace_metadata_aggregate_2() {
@@ -601,6 +660,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn NamespaceRegistrationTransactionV1_namespace_registration_single_1() {
@@ -611,6 +671,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn NamespaceRegistrationTransactionV1_namespace_registration_single_2() {
@@ -621,6 +682,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn NamespaceRegistrationTransactionV1_namespace_registration_aggregate_1() {
@@ -631,6 +693,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn NamespaceRegistrationTransactionV1_namespace_registration_aggregate_2() {
@@ -641,6 +704,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn NodeKeyLinkTransactionV1_node_key_link_single_1() {
@@ -651,6 +715,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn NodeKeyLinkTransactionV1_node_key_link_aggregate_1() {
@@ -661,6 +726,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn SecretLockTransactionV1_secret_lock_single_1() {
@@ -671,6 +737,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn SecretLockTransactionV1_secret_lock_single_2() {
@@ -681,6 +748,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn SecretLockTransactionV1_secret_lock_aggregate_1() {
@@ -691,6 +759,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn SecretLockTransactionV1_secret_lock_aggregate_2() {
@@ -701,6 +770,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn SecretProofTransactionV1_secret_proof_single_1() {
@@ -711,6 +781,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn SecretProofTransactionV1_secret_proof_aggregate_1() {
@@ -721,6 +792,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_single_1() {
@@ -731,6 +803,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_single_2() {
@@ -741,6 +814,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_single_3() {
@@ -751,6 +825,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_single_4() {
@@ -761,6 +836,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_single_5() {
@@ -771,6 +847,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_single_6() {
@@ -781,6 +858,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_single_7() {
@@ -791,6 +869,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_aggregate_1() {
@@ -801,6 +880,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_aggregate_2() {
@@ -811,6 +891,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_aggregate_3() {
@@ -821,6 +902,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_aggregate_4() {
@@ -831,6 +913,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_aggregate_5() {
@@ -841,6 +924,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_aggregate_6() {
@@ -851,6 +935,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn TransferTransactionV1_transfer_aggregate_7() {
@@ -861,6 +946,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn VotingKeyLinkTransactionV1_voting_key_link_single_1() {
@@ -871,6 +957,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn VotingKeyLinkTransactionV1_voting_key_link_single_2() {
@@ -881,6 +968,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn VotingKeyLinkTransactionV1_voting_key_link_aggregate_1() {
@@ -891,6 +979,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn VotingKeyLinkTransactionV1_voting_key_link_aggregate_2() {
@@ -901,6 +990,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn VrfKeyLinkTransactionV1_vrf_key_link_single_1() {
@@ -911,6 +1001,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn VrfKeyLinkTransactionV1_vrf_key_link_single_2() {
@@ -921,6 +1012,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn VrfKeyLinkTransactionV1_vrf_key_link_aggregate_1() {
@@ -931,6 +1023,7 @@ mod symbol_models_test {
         let output_payload = tx.serialize();
         assert_eq!(input_payload, output_payload);
     }
+
     #[test]
     #[allow(non_snake_case)]
     fn VrfKeyLinkTransactionV1_vrf_key_link_aggregate_2() {

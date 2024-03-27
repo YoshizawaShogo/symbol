@@ -1,60 +1,39 @@
-from pathlib import Path
-from enum import Enum
-import catparser
-from catparser.DisplayType import DisplayType
-
 def generate_integer(ast_model):
-    assert(ast_model.is_unsigned)
-    # define variables
-    ret = '// generated from generate_integer()\n'
-    ret += '#[derive(PartialOrd, Ord)]'
-    ret += '#[derive(Copy)]'
-    name_lower = ast_model.name.lower()
-    value_bit_width = ast_model.size * 8
-    if value_bit_width not in (8, 16, 32, 64):
-        raise 'unexpected'
-    if ast_model.is_unsigned:
-        value_type = 'u' + str(value_bit_width)
-    else:
-        raise 'unexpected'
-
-    # structure
-    ret += f'pub struct {ast_model.name}(pub {value_type});'
-
-    # implement
-    ret += 'impl ' + ast_model.name + ' {'
+    name = ast_model.name
+    bytes_size  = ast_model.size
+    bits_size = bytes_size * 8
+    type = ('u' if ast_model.is_unsigned else 'i') + str(bits_size)
     
-    ## SIZE
-    ret += f'pub const SIZE: usize = {ast_model.size};'
-
-    ## constructor
-    ret += f'pub fn new({name_lower}: {value_type}) -> Self {{'
-    ret += f'Self({name_lower})'
-    ret += '}'
+    ret = f'''
+        // generated from generate_integer()
+        #[derive(PartialOrd, Ord, Copy)]
+        pub struct {name}(pub {type});
+        impl {name} {{
+            pub const SIZE: usize = {bytes_size};
+            pub fn new({name.lower()}: {type}) -> Self {{
+                Self({name.lower()})
+            }}
+            pub fn default() -> Self {{
+                Self(0)
+            }}
+            pub fn size(&self) -> usize {{
+                Self::SIZE
+            }}
+            pub fn deserialize(payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {{
+                if payload.len() < Self::SIZE {{
+                    return Err(SymbolError::SizeError {{
+                        expect: vec![Self::SIZE],
+                        real: payload.len(),
+                    }});
+                }}
+                let (bytes, rest) = payload.split_at(Self::SIZE);
+                let value = {type}::from_le_bytes(bytes.try_into()?);
+                Ok((Self(value), rest))
+            }}
+            pub fn serialize(&self) -> Vec<u8> {{
+                self.0.to_le_bytes().to_vec()
+            }}
+        }}
+    '''
     
-    ret += 'pub fn default() -> Self {'
-    ret += 'Self(0)'
-    ret += '}'
-
-    ## size
-    ret += 'pub fn size(&self) -> usize {'
-    ret += 'Self::SIZE'
-    ret += '}'
-
-    ## deserialize
-    ret += 'pub fn deserialize(payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {'
-    ret += 'if payload.len() < Self::SIZE { return Err(SymbolError::SizeError{expect: vec![Self::SIZE], real: payload.len()}) }'
-    ret += 'let (bytes, rest) = payload.split_at(Self::SIZE);'
-    ret += f'let value = {value_type}::from_le_bytes(bytes.try_into()?);'
-    ret += 'Ok((Self(value), rest))'
-    ret += '}'
-
-    ## serialize
-    ret += 'pub fn serialize(&self) -> Vec<u8> {'
-    ret += 'self.0.to_le_bytes().to_vec()'
-    ret += '}'
-
-    # end
-    ret += '}'
-
     return ret

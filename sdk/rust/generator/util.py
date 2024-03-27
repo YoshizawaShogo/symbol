@@ -5,11 +5,11 @@ from catparser.DisplayType import DisplayType
 def snake_to_camel(word):
     return ''.join(x.capitalize() or '_' for x in word.split('_'))
 
-def get_type_of_trait(trait, ast_models):
-    for ast_model in ast_models:
-        if ast_model.display_type != DisplayType.STRUCT:
+def get_type_of_trait(trait, astmodels):
+    for astmodel in astmodels:
+        if astmodel.display_type != DisplayType.STRUCT:
             continue
-        for f in ast_model.fields:
+        for f in astmodel.fields:
             if f.name != trait:
                 continue
             if type(f.field_type) == catparser.ast.Array:
@@ -17,17 +17,17 @@ def get_type_of_trait(trait, ast_models):
             else:
                 return f.field_type
             
-def get_factory_type(ast_model):
-    if hasattr(ast_model, 'factory_type'):
-        return ast_model.factory_type
+def get_factory_type(astmodel):
+    if hasattr(astmodel, 'factory_type'):
+        return astmodel.factory_type
     return None
 
-def get_factory_types(ast_models):
-    factory_types = set([get_factory_type(ast_model) for ast_model in ast_models])
+def get_factory_types(astmodels):
+    factory_types = set([get_factory_type(astmodel) for astmodel in astmodels])
     factory_types.remove(None)
     return factory_types
 
-def update_int_type_of_struct(ast_models):
+def update_int_type_of_struct(astmodels):
     def _update_int_type(field_type):
         if type(field_type) == catparser.ast.FixedSizeInteger:
             field_type.short_name = field_type.short_name.replace("uint", "u").replace("int", "i")
@@ -36,20 +36,20 @@ def update_int_type_of_struct(ast_models):
             _update_int_type(element_type)
         else:
             pass
-    for ast_model in ast_models:
-        if ast_model.display_type != DisplayType.STRUCT:
+    for astmodel in astmodels:
+        if astmodel.display_type != DisplayType.STRUCT:
             continue
-        for f in ast_model.fields:
+        for f in astmodel.fields:
             _update_int_type(f.field_type)
             
-def constantized_by(field_name, ast_model):
-    for x in ast_model.initializers:
+def constantized_by(field_name, astmodel):
+    for x in astmodel.initializers:
         if x.target_property_name == field_name:
             return x.value                    
     return None
         
-def is_size_of_other(field, ast_model):
-    for other_field in ast_model.fields:
+def is_size_of_other(field, astmodel):
+    for other_field in astmodel.fields:
         if field.name == other_field.size:
             return other_field
     return None
@@ -59,10 +59,10 @@ def skip_in_constructor(field):
         return True
     return False
 
-def is_member(field, ast_model):
-    if constantized_by(field.name, ast_model):
+def field_is_member_of_astmodel(field, astmodel):
+    if constantized_by(field.name, astmodel):
         return False
-    if is_size_of_other(field, ast_model):
+    if is_size_of_other(field, astmodel):
         return False
     if field.is_const:
         return False
@@ -72,16 +72,16 @@ def is_member(field, ast_model):
         return False
     return True
 
-def is_method(field, ast_model):
-    return constantized_by(field.name, ast_model)
+def is_method(field, astmodel):
+    return constantized_by(field.name, astmodel)
 
-def header_for_each_ast_model(ast_model):
+def header_for_each_astmodel(astmodel):
     ret = ""
-    ret += display_ast_model(ast_model)
+    ret += display_astmodel(astmodel)
     ret += '#[derive(Debug, Clone, PartialEq, Eq)]\n'
     return ret
 
-def display_ast_model(obj, indent: int = 0):
+def display_astmodel(obj, indent: int = 0):
     ret = ""
     prefix = '//' + '  ' * indent
     if hasattr(obj, '__dict__'):
@@ -102,7 +102,7 @@ def display_ast_model(obj, indent: int = 0):
                     ret += f'{prefix}{key}: {value}\n'
                 else:
                     ret += f'{prefix}{key}: {type(value)}\n'
-                ret += display_ast_model(value, indent + 2)
+                ret += display_astmodel(value, indent + 2)
                 continue
             ret += f'{prefix}{key}: {value}\n'
             
@@ -114,7 +114,7 @@ def display_ast_model(obj, indent: int = 0):
                 else:
                     tmp = element
                 ret += f'{prefix}{tmp}\n'
-                ret += display_ast_model(element, indent + 2)
+                ret += display_astmodel(element, indent + 2)
                 continue
             ret += f'{prefix}{element}\n'
             

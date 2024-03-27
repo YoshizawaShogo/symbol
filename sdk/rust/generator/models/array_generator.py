@@ -1,6 +1,6 @@
-def generate_bytearray(ast_model):
-    name = ast_model.name
-    size = ast_model.size
+def generate_bytearray(astmodel):
+    name = astmodel.name
+    size = astmodel.size
     
     ret = f'''
         // generated from generate_bytearray()

@@ -12,12 +12,12 @@ RUST_PRIMITIVE_INTEGER = ("uint8", "uint16", "uint32", "uint64", "int8", "int16"
 
 class Generator:
     @staticmethod
-    def generate(ast_models, output):
+    def generate(astmodels, output):
         print(f'python catbuffer generator called with output: {output}')
-        generate_files(ast_models, Path(output))
+        generate_files(astmodels, Path(output))
 
-def generate_files(ast_models, output_path: Path):
-    type_dict = get_type_dict(ast_models)
+def generate_files(astmodels, output_path: Path):
+    type_dict = get_type_dict(astmodels)
     
     output = 'mod symbol_models_test {use hex::decode;use symbol::symbol::prelude::*;'
     
@@ -26,15 +26,15 @@ def generate_files(ast_models, output_path: Path):
         json_data =  json.load(f)
         
     for test in json_data:
-        output += parse_test(test, type_dict, ast_models)
+        output += parse_test(test, type_dict, astmodels)
 
     output += '}'
     with open(output_path, 'w', encoding='utf8', newline='') as output_file:
         output_file.write(output)
 
-def parse_test(json_data_of_test, type_dict, ast_models):
+def parse_test(json_data_of_test, type_dict, astmodels):
     test = json_data_of_test
-    struct = find_ast_model(test["schema_name"], ast_models)
+    struct = find_astmodel(test["schema_name"], astmodels)
     payload = json_data_of_test["payload"]
     payload = modify_public_key_of_sturct(payload, struct, test["descriptor"], type_dict)
     
@@ -50,28 +50,28 @@ def parse_test(json_data_of_test, type_dict, ast_models):
     '''
     return ret
 
-def get_type_dict(ast_models):
+def get_type_dict(astmodels):
     type_dict = {} # key: type_name, value: ast
-    for ast_model in ast_models:
-        name = ast_model.name
-        type_dict[name] = ast_model
+    for astmodel in astmodels:
+        name = astmodel.name
+        type_dict[name] = astmodel
     
     return type_dict
 
-def find_ast_model(ast_model_name, ast_models):
-    index = [f.name for f in ast_models].index(ast_model_name)
-    astmodel = ast_models[index]
+def find_astmodel(astmodel_name, astmodels):
+    index = [f.name for f in astmodels].index(astmodel_name)
+    astmodel = astmodels[index]
     return astmodel
     
-def modify_public_key_of_sturct(payload, ast_model_of_struct, json_of_struct: list, type_dict):
+def modify_public_key_of_sturct(payload, astmodel_of_struct, json_of_struct: list, type_dict):
     def generate_publickey(privatekey):
         from nacl.signing import SigningKey
         import nacl.utils
         private_key = SigningKey(bytes.fromhex(privatekey))
         return private_key.verify_key.encode(encoder=nacl.encoding.HexEncoder).decode('utf-8').upper()
 
-    def modify_public_key_of_byte_array(payload, ast_model_of_byte_array, value):
-        if ast_model_of_byte_array.name.endswith("PublicKey"):
+    def modify_public_key_of_byte_array(payload, astmodel_of_byte_array, value):
+        if astmodel_of_byte_array.name.endswith("PublicKey"):
             old_publickey = str(value).upper()
             new_publickey = generate_publickey(old_publickey)
             payload = payload.replace(old_publickey, new_publickey)
@@ -81,21 +81,21 @@ def modify_public_key_of_sturct(payload, ast_model_of_struct, json_of_struct: li
         if str(element_type) in "uint8":
             return payload
 
-        ast_model = type_dict[element_type]
-        diplay_type = ast_model.display_type
+        astmodel = type_dict[element_type]
+        diplay_type = astmodel.display_type
         values = value
         for value in values:
             if diplay_type == DisplayType.STRUCT:
                 if element_type == "EmbeddedTransaction":
                     embedded_element_type = "Embedded" + util.snake_to_camel(value["type"])
-                    embedded_ast_model = type_dict[embedded_element_type]
-                    payload = modify_public_key_of_sturct(payload, embedded_ast_model, value, type_dict)
+                    embedded_astmodel = type_dict[embedded_element_type]
+                    payload = modify_public_key_of_sturct(payload, embedded_astmodel, value, type_dict)
                 else:
-                    payload = modify_public_key_of_sturct(payload, ast_model, value, type_dict)
+                    payload = modify_public_key_of_sturct(payload, astmodel, value, type_dict)
             elif diplay_type == DisplayType.ENUM:
                 continue
             elif diplay_type == DisplayType.BYTE_ARRAY:
-                payload = modify_public_key_of_byte_array(payload, ast_model, value)
+                payload = modify_public_key_of_byte_array(payload, astmodel, value)
             elif diplay_type == DisplayType.INTEGER:
                 continue
             else:
@@ -105,22 +105,22 @@ def modify_public_key_of_sturct(payload, ast_model_of_struct, json_of_struct: li
         if variable == 'type':
             continue
         
-        field_ast_model = find_ast_model(variable, ast_model_of_struct.fields)
-        field_type = field_ast_model.field_type
+        field_astmodel = find_astmodel(variable, astmodel_of_struct.fields)
+        field_type = field_astmodel.field_type
         
         if str(field_type) in RUST_PRIMITIVE_INTEGER:
             continue
         elif type(field_type) == catparser.ast.Array:
             payload = modify_public_key_of_vec(payload, field_type.element_type, value, type_dict)
         else:
-            ast_model = type_dict[field_type]
-            diplay_type = ast_model.display_type
+            astmodel = type_dict[field_type]
+            diplay_type = astmodel.display_type
             if diplay_type == DisplayType.STRUCT:
-                payload = modify_public_key_of_sturct(payload, ast_model, value, type_dict)
+                payload = modify_public_key_of_sturct(payload, astmodel, value, type_dict)
             elif diplay_type == DisplayType.ENUM:
                 continue
             elif diplay_type == DisplayType.BYTE_ARRAY:
-                payload = modify_public_key_of_byte_array(payload, ast_model, value)
+                payload = modify_public_key_of_byte_array(payload, astmodel, value)
             elif diplay_type == DisplayType.INTEGER:
                 continue
             else:

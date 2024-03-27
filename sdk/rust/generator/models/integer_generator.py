@@ -1,8 +1,8 @@
-def generate_integer(ast_model):
-    name = ast_model.name
-    bytes_size  = ast_model.size
+def generate_integer(astmodel):
+    name = astmodel.name
+    bytes_size  = astmodel.size
     bits_size = bytes_size * 8
-    type = ('u' if ast_model.is_unsigned else 'i') + str(bits_size)
+    type = ('u' if astmodel.is_unsigned else 'i') + str(bits_size)
     
     ret = f'''
         // generated from generate_integer()

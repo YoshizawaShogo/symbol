@@ -5,21 +5,24 @@ def generate_factory(factory, products):
     factory_name = factory.name
     ret = '// generated from generate_factory()\n'
     
-    # enum
+    # define enum
     ret += f'pub enum {factory_name} {{'
     for p in products:
         ret += f'{p.name}({p.name}),'
     ret += '}'
     
+    # implement
     ret += '#[allow(unreachable_patterns)]'
     ret += f'impl {factory_name} {{'
     
+    ## size
     ret += 'pub fn size(&self) -> usize {'
     ret += 'match self {'
     for p in products:
         ret += f'Self::{p.name}(x) => x.size(),'
     ret += '}}'
     
+    ## deserialize
     ret += 'pub fn deserialize(payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {'
     ret += 'let mut _tmp_payload = payload;'
     for f in factory.fields:
@@ -68,7 +71,6 @@ def generate_factory(factory, products):
         if util.constantized_by(f.name, factory):
             pass
         
-    common_field_name_list = [f.name for f in factory.fields]
     ret += 'match ('
     for d in factory.discriminator:
         ret += f'_{d}, '
@@ -95,6 +97,7 @@ def generate_factory(factory, products):
     ret += '}),'
     ret += '}}' 
     
+    ## serialize
     ret += 'pub fn serialize(&self) -> Vec<u8> {'
     ret += 'match self {'
     for p in products:

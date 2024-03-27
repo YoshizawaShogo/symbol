@@ -13,13 +13,13 @@ from generator.models import factory_generator
 
 class Generator:
     @staticmethod
-    def generate(ast_models, output):
+    def generate(astmodels, output):
         print(f'python catbuffer generator called with output: {output}')
-        generate_files(ast_models, Path(output))
+        generate_files(astmodels, Path(output))
 
-def generate_files(ast_models, output_directory: Path):
+def generate_files(astmodels, output_directory: Path):
     
-    util.update_int_type_of_struct(ast_models)
+    util.update_int_type_of_struct(astmodels)
     output_directory.mkdir(exist_ok=True)
 
     with open(output_directory / 'models.rs', 'w', encoding='utf8', newline='') as output_file:
@@ -33,7 +33,7 @@ def generate_files(ast_models, output_directory: Path):
         '''
 
         for trait in constant.TRAITS_FOR_SIGN:
-            type = util.get_type_of_trait(trait, ast_models)
+            type = util.get_type_of_trait(trait, astmodels)
             output += f'''
                 pub trait Trait{util.snake_to_camel(trait)} {{
                 fn get_{trait}(&self) -> &{type};
@@ -41,31 +41,31 @@ def generate_files(ast_models, output_directory: Path):
                 }}
             '''
             
-        factory_types = util.get_factory_types(ast_models)
+        factory_types = util.get_factory_types(astmodels)
 
-        for ast_model in ast_models:
-            if ast_model.name in ('Signature', 'PublicKey', 'VotingPublicKey'): 
+        for astmodel in astmodels:
+            if astmodel.name in ('Signature', 'PublicKey', 'VotingPublicKey'): 
                 # See src/symbol/models_header.rs
                 continue
             
-            ast_model = copy.deepcopy(ast_model)
-            output += util.header_for_each_ast_model(ast_model)
-            if ast_model.name in factory_types:
-                factory = ast_model
+            astmodel = copy.deepcopy(astmodel)
+            output += util.header_for_each_astmodel(astmodel)
+            if astmodel.name in factory_types:
+                factory = astmodel
                 factory_name = factory.name
                 products = []
-                for ast_model in ast_models:
-                    if util.get_factory_type(ast_model) == factory_name:
-                        products.append(copy.deepcopy(ast_model))
+                for astmodel in astmodels:
+                    if util.get_factory_type(astmodel) == factory_name:
+                        products.append(copy.deepcopy(astmodel))
                 output += factory_generator.generate_factory(factory, products)
-            elif ast_model.display_type == DisplayType.STRUCT:
-                output += struct_generator.generate_struct(ast_model)
-            elif ast_model.display_type == DisplayType.ENUM:
-                output += enum_generator.generate_enum(ast_model)
-            elif ast_model.display_type == DisplayType.BYTE_ARRAY:
-                output += array_generator.generate_bytearray(ast_model)
-            elif ast_model.display_type == DisplayType.INTEGER:
-                output += integer_generator.generate_integer(ast_model)
+            elif astmodel.display_type == DisplayType.STRUCT:
+                output += struct_generator.generate_struct(astmodel)
+            elif astmodel.display_type == DisplayType.ENUM:
+                output += enum_generator.generate_enum(astmodel)
+            elif astmodel.display_type == DisplayType.BYTE_ARRAY:
+                output += array_generator.generate_bytearray(astmodel)
+            elif astmodel.display_type == DisplayType.INTEGER:
+                output += integer_generator.generate_integer(astmodel)
             else:
                 raise 'Unexpected'
 

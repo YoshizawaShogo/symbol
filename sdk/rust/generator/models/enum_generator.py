@@ -1,9 +1,9 @@
 
-def generate_enum(ast_model):
-    name = ast_model.name
-    bits_size = ast_model.size * 8
-    type = ('u' if ast_model.is_unsigned else 'i') + str(bits_size)
-    values = ast_model.values
+def generate_enum(astmodel):
+    name = astmodel.name
+    bits_size = astmodel.size * 8
+    type = ('u' if astmodel.is_unsigned else 'i') + str(bits_size)
+    values = astmodel.values
     
     # common (i.e. prepare)
     ret = '// generated from generate_enum()\n'
@@ -24,7 +24,7 @@ def generate_enum(ast_model):
             )
         )
     )
-    if ast_model.is_bitwise:
+    if astmodel.is_bitwise:
         ret += f'X({type}),'
     ret += '}'
 
@@ -34,7 +34,7 @@ def generate_enum(ast_model):
     ret += 'impl ' + name + ' {'
     
     ## SIZE
-    ret += f'pub const SIZE: usize = {ast_model.size};'
+    ret += f'pub const SIZE: usize = {astmodel.size};'
 
     ## constructor
     ret += 'pub fn default() -> Self {'
@@ -47,7 +47,7 @@ def generate_enum(ast_model):
     ret += '}'
     
     ## to_num
-    if ast_model.is_bitwise:
+    if astmodel.is_bitwise:
         ret += f'pub fn to_num(&self) -> {type} {{'
         ret += 'match self {'
         ret += ''.join(
@@ -75,7 +75,7 @@ def generate_enum(ast_model):
             )
         )
     )
-    if ast_model.is_bitwise:
+    if astmodel.is_bitwise:
         ret += 'x if ('
         ret += ''.join(
             list(
@@ -92,7 +92,7 @@ def generate_enum(ast_model):
 
 
     ## serialize
-    if ast_model.is_bitwise:
+    if astmodel.is_bitwise:
         ret += f'pub fn serialize(&self) -> Vec<u8> {{'
         ret += 'match self {'
         ret += ''.join(
@@ -115,7 +115,7 @@ def generate_enum(ast_model):
     ret += '}'
     
     # Bit OP
-    if ast_model.is_bitwise:
+    if astmodel.is_bitwise:
         ret += f'''
             impl BitOr for {name} {{
                 type Output = Self;

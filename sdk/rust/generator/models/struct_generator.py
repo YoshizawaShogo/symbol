@@ -4,16 +4,16 @@ from generator import constant
 from generator import util
 
 
-def generate_struct(ast_model):
-    struct_name = ast_model.name
+def generate_struct(astmodel):
+    struct_name = astmodel.name
     ret = '// generated from generate_struct()\n'
     if struct_name.endswith('Mosaic'):
         ret += '#[derive(PartialOrd, Ord)]'
     
     # struct
-    ret += f'pub struct {ast_model.name} {{'
-    for f in ast_model.fields:
-        if not util.is_member(f, ast_model):
+    ret += f'pub struct {astmodel.name} {{'
+    for f in astmodel.fields:
+        if not util.field_is_member_of_astmodel(f, astmodel):
             continue
         if type(f.field_type) == catparser.ast.Array:
             ret += f'pub {f.name}: Vec<{f.field_type.element_type}>,'
@@ -24,7 +24,7 @@ def generate_struct(ast_model):
     # implement
     ## const
     ret += 'impl ' + struct_name + ' {'
-    for f in ast_model.fields:
+    for f in astmodel.fields:
         if not f.is_const:
             continue
         if type(f.value) == str:
@@ -34,19 +34,19 @@ def generate_struct(ast_model):
         else:
             raise "unexpected"
         
-    for f in ast_model.fields:
-        const = util.constantized_by(f.name, ast_model)
+    for f in astmodel.fields:
+        const = util.constantized_by(f.name, astmodel)
         if not const:
             continue
-        if const in [f.name for f in ast_model.fields]:
+        if const in [f.name for f in astmodel.fields]:
             ret += f'pub fn {f.name}(&self) -> {f.field_type} {{ Self::{const} }}'
         else:
             ret += f'pub fn {f.name}(&self) -> {f.field_type} {{ {f.field_type}::default() }}'
         
     ## constructor
     ret += 'pub fn new('
-    for f in ast_model.fields:
-        if not util.is_member(f, ast_model):
+    for f in astmodel.fields:
+        if not util.field_is_member_of_astmodel(f, astmodel):
             continue
         if util.skip_in_constructor(f):
             continue
@@ -56,8 +56,8 @@ def generate_struct(ast_model):
             ret += f'{f.name}: {f.field_type},'
     ret += ') -> Self {'
     ret += 'Self {'
-    for f in ast_model.fields:
-        if not util.is_member(f, ast_model):
+    for f in astmodel.fields:
+        if not util.field_is_member_of_astmodel(f, astmodel):
             continue
         if util.skip_in_constructor(f):
             ret += f'{f.name}: {f.field_type}::default(),'
@@ -68,8 +68,8 @@ def generate_struct(ast_model):
 
     ret += 'pub fn default() -> Self {'
     ret += 'Self {'
-    for f in ast_model.fields:
-        if not util.is_member(f, ast_model):
+    for f in astmodel.fields:
+        if not util.field_is_member_of_astmodel(f, astmodel):
             continue
         if type(f.field_type) == catparser.ast.Array:
             ret += f'{f.name}: Vec::new(),'
@@ -83,18 +83,18 @@ def generate_struct(ast_model):
     ## size
     ret += 'pub fn size(&self) -> usize {'
     ret += 'let mut size = 0;'
-    for f in ast_model.fields:
+    for f in astmodel.fields:
         if f.is_const:
             continue
         if f.is_conditional:
             linked_field_name = f.value.linked_field_name
-            linked_field_ast_model = [f for f in ast_model.fields if f.name == linked_field_name][0]
-            linked_field_type = linked_field_ast_model.field_type
+            linked_field_astmodel = [f for f in astmodel.fields if f.name == linked_field_name][0]
+            linked_field_type = linked_field_astmodel.field_type
             linked_field_value = f.value.value
             ret += f'if self.{linked_field_name} == {linked_field_type}::{linked_field_value} {{'
     
         if f.size is None:
-            if util.is_method(f, ast_model):
+            if util.is_method(f, astmodel):
                 ret += f'size += self.{f.name}().size();'
             else:
                 ret += f'size += self.{f.name}.size();'
@@ -128,23 +128,17 @@ def generate_struct(ast_model):
     was_conditional_list = []
     ret += 'pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {'
     ret += '#[allow(unused)] let initial_payload_len = payload.len();'
-    for f in ast_model.fields:
+    for f in astmodel.fields:
         if f.is_const:
             continue
         fn = f.name
-        if util.constantized_by(f.name, ast_model):
+        if util.constantized_by(f.name, astmodel):
             fn = '_' + fn
         
         ft = f.field_type
         fs = f.size
         if f.name == 'size':
             ret += f'if payload.len() < {fs} {{ return Err(SymbolError::SizeError{{expect: vec![{fs}], real: payload.len()}}) }}'
-        # if f.is_conditional:
-        #     linked_field_name = f.value.linked_field_name
-        #     linked_field_ast_model = [f for f in ast_model.fields if f.name == linked_field_name][0]
-        #     linked_field_type = linked_field_ast_model.field_type
-        #     linked_field_value = f.value.value
-        #     ret += f'if self.{linked_field_name} == {linked_field_type}::{linked_field_value} {{'    
         
         if type(ft) == catparser.ast.FixedSizeInteger:
             ret += f'let {fn} = {ft}::from_le_bytes(payload[..{fs}].try_into()?);'
@@ -201,15 +195,12 @@ def generate_struct(ast_model):
             ret += f'if size as usize > payload.len() + {fs} {{ return Err(SymbolError::SizeError{{expect: vec![size as usize], real: payload.len() + {fs} }}); }}'
         if f.is_reserved:
             ret += f'if {f.name} != 0 {{ return Err(SymbolError::ReservedIsNotZeroError({f.name} as u32)); }}'
-        if util.constantized_by(f.name, ast_model):
+        if util.constantized_by(f.name, astmodel):
             pass
-        
-        # if f.is_conditional:
-        #     ret += '}'
     
     ret += f'let self_ = Self {{'
-    for f in ast_model.fields:
-        if not util.is_member(f, ast_model):
+    for f in astmodel.fields:
+        if not util.field_is_member_of_astmodel(f, astmodel):
             continue
         ret += f'{f.name},'
     ret += '};'
@@ -220,22 +211,22 @@ def generate_struct(ast_model):
     
     ## serialize
     ret += 'pub fn serialize(&self) -> Vec<u8> {'
-    for f in ast_model.fields:
+    for f in astmodel.fields:
         if f.is_const:
             continue
         fn = f.name
 
         ft = f.field_type
         fs = f.size
-        if fn == 'size' or util.constantized_by(f.name, ast_model):
+        if fn == 'size' or util.constantized_by(f.name, astmodel):
             if type(ft) == catparser.ast.FixedSizeInteger:
                 ret += f"let {fn} = (self.{fn}() as {ft}).to_le_bytes();"
             else:
                 ret += f"let {fn} = self.{fn}().serialize();"
         elif f.is_reserved:
             ret += f'let {fn} = 0{ft.short_name}.to_le_bytes();'
-        elif util.is_size_of_other(f, ast_model):
-            other_field = util.is_size_of_other(f, ast_model)
+        elif util.is_size_of_other(f, astmodel):
+            other_field = util.is_size_of_other(f, astmodel)
             ofn = other_field.name
             alignment = other_field.field_type.alignment
             if alignment is None:
@@ -266,10 +257,9 @@ def generate_struct(ast_model):
             ret += f'let {fn} = self.{fn}.to_le_bytes();'
         else:
             if f.is_conditional:
-            # ret += f'if self.{linked_field_name} == {linked_field_type}::{linked_field_value} {{'
                 linked_field_name = f.value.linked_field_name
-                linked_field_ast_model = [f for f in ast_model.fields if f.name == linked_field_name][0]
-                linked_field_type = linked_field_ast_model.field_type
+                linked_field_astmodel = [f for f in astmodel.fields if f.name == linked_field_name][0]
+                linked_field_type = linked_field_astmodel.field_type
                 linked_field_value = f.value.value
                 ret += f'''
                     let {fn} = if self.{linked_field_name} == {linked_field_type}::{linked_field_value} {{
@@ -282,7 +272,7 @@ def generate_struct(ast_model):
                 ret += f'let {fn} = self.{fn}.serialize();'
             
     ret += '['
-    for f in ast_model.fields:
+    for f in astmodel.fields:
         if f.is_const:
             continue
         fn = f.name
@@ -293,7 +283,7 @@ def generate_struct(ast_model):
     ret += '}'
     
     ## trait
-    for f in ast_model.fields:
+    for f in astmodel.fields:
         fn = f.name
         if fn not in constant.TRAITS_FOR_SIGN:
             continue

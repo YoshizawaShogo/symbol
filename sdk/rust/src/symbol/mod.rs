@@ -6,6 +6,7 @@ pub(crate) mod bip;
 pub(crate) mod cipher;
 pub(crate) mod hash256;
 pub(crate) mod key;
+pub(crate) mod signature;
 pub(crate) mod voting_keys_generator;
 
 pub mod prelude;

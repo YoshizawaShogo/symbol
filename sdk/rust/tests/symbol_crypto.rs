@@ -76,6 +76,7 @@ fn test1_keys() {
     for test in tests {
         let private_key = PrivateKey::from_str(&test.privateKey).unwrap();
         let public_key = PublicKey::from_str(&test.publicKey).unwrap();
+        assert_eq!(private_key.pubilc_key().0.len(), public_key.0.len());
         assert_eq!(private_key.pubilc_key(), public_key);
     }
 }
@@ -153,8 +154,6 @@ fn test1_address_with_private_network() {
 
 #[test]
 fn test2_sign() {
-    use ed25519_dalek::{Signer, Verifier};
-
     #[derive(Deserialize, Debug)]
     #[allow(non_snake_case)]
     struct Test {

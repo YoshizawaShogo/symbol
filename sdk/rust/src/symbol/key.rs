@@ -1,5 +1,4 @@
 use crate::symbol::models::*;
-pub use ed25519_dalek::Signer;
 
 pub trait ExtentionPublicKey
 where
@@ -7,21 +6,24 @@ where
 {
     fn from_str(str: &str) -> Result<Self, SymbolError>;
     fn address(&self, network: NetworkType) -> UnresolvedAddress;
+    fn verify(&self, message: &[u8], signature: &Signature) -> Result<(), SymbolError>;
     fn verify_transaction<T: TraitMessage + TraitSignature>(
         &self,
         transaction: &T,
     ) -> Result<(), SymbolError>;
+    fn to_bytes(&self) -> [u8; PublicKey::SIZE];
+    fn as_bytes(&self) -> &[u8; PublicKey::SIZE];
 }
 
 impl ExtentionPublicKey for PublicKey {
     fn from_str(str: &str) -> Result<Self, SymbolError> {
-        Ok(Self::from_bytes(hex::decode(str)?.as_slice().try_into()?)?)
+        Ok(Self(hex::decode(str).unwrap().try_into().unwrap()))
     }
     fn address(&self, network_type: NetworkType) -> UnresolvedAddress {
         use ripemd::Ripemd160;
         use sha3::Sha3_256;
 
-        let part_one_hash = get_hash::<Sha3_256>(&self);
+        let part_one_hash = get_hash::<Sha3_256>(&self.0);
         let part_two_hash = get_hash::<Ripemd160>(part_one_hash);
 
         let mut version = network_type.serialize();
@@ -34,50 +36,75 @@ impl ExtentionPublicKey for PublicKey {
 
         UnresolvedAddress::new(address.try_into().unwrap())
     }
+    fn verify(&self, msg: &[u8], signature: &Signature) -> Result<(), SymbolError> {
+        use ed25519_dalek::{Verifier, VerifyingKey};
+        let verifying_key = VerifyingKey::from_bytes(&self.0)?;
+        let signature = ed25519_dalek::Signature::from_bytes(&signature.0);
+        Ok(verifying_key.verify(msg, &signature)?)
+    }
     fn verify_transaction<T: TraitMessage + TraitSignature>(
         &self,
         transaction: &T,
     ) -> Result<(), SymbolError> {
-        use ed25519_dalek::Verifier;
-        Ok(self.verify(transaction.get_message(), transaction.get_signature())?)
+        use ed25519_dalek::{Verifier, VerifyingKey};
+        let verifying_key = VerifyingKey::from_bytes(&self.0)?;
+        let message = transaction.get_message();
+        let signature = transaction.get_signature().0;
+        let signature = ed25519_dalek::Signature::from_bytes(&signature);
+        Ok(verifying_key.verify(&message, &signature)?)
+    }
+    #[inline]
+    fn to_bytes(&self) -> [u8; Self::SIZE] {
+        self.0
+    }
+    #[inline]
+    fn as_bytes(&self) -> &[u8; Self::SIZE] {
+        &self.0
     }
 }
 
-pub trait ExtentionPrivateKey
-where
-    Self: Sized,
-{
-    const SIZE: usize;
-    fn from_str(str: &str) -> Result<Self, SymbolError>;
-    fn sign_transaction<T: TraitMessage + TraitSignature>(&self, transaction: T) -> T;
-    fn verify_transaction<T: TraitMessage + TraitSignature>(
-        &self,
-        transaction: &T,
-    ) -> Result<(), SymbolError>;
-    fn pubilc_key(&self) -> PublicKey;
-    fn shared_key(&self, other_public_key: PublicKey) -> SharedKey;
-}
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub struct PrivateKey([u8; Self::SIZE]);
 
-impl ExtentionPrivateKey for PrivateKey {
-    const SIZE: usize = 32;
-    fn from_str(str: &str) -> Result<Self, SymbolError> {
+impl PrivateKey {
+    pub const SIZE: usize = 32;
+    pub fn from_bytes(bytes: &[u8; Self::SIZE]) -> Self {
+        Self(*bytes)
+    }
+    #[inline]
+    pub fn to_bytes(&self) -> [u8; Self::SIZE] {
+        self.0
+    }
+    #[inline]
+    pub fn as_bytes(&self) -> &[u8; Self::SIZE] {
+        &self.0
+    }
+    pub fn from_str(str: &str) -> Result<Self, SymbolError> {
         Ok(Self::from_bytes(hex::decode(str)?.as_slice().try_into()?))
     }
-    fn sign_transaction<T: TraitMessage + TraitSignature>(&self, mut transaction: T) -> T {
-        let signature = self.sign(transaction.get_message());
-        transaction.set_signature(signature);
+    pub fn sign(&self, msg: &[u8]) -> Signature {
+        use ed25519_dalek::{Signer, SigningKey};
+        let signing_key = SigningKey::from_bytes(&self.to_bytes());
+        Signature(signing_key.sign(msg).to_bytes())
+    }
+    pub fn sign_transaction<T: TraitMessage + TraitSignature>(&self, mut transaction: T) -> T {
+        transaction.set_signature(self.sign(transaction.get_message()));
         transaction
     }
-    fn verify_transaction<T: TraitMessage + TraitSignature>(
+    pub fn verify_transaction<T: TraitMessage + TraitSignature>(
         &self,
         transaction: &T,
     ) -> Result<(), SymbolError> {
-        self.verifying_key().verify_transaction(transaction)
+        self.pubilc_key().verify_transaction(transaction)
     }
-    fn pubilc_key(&self) -> PublicKey {
-        self.verifying_key()
+    pub fn pubilc_key(&self) -> PublicKey {
+        PublicKey(
+            ed25519_dalek::SigningKey::from_bytes(&self.0)
+                .verifying_key()
+                .to_bytes(),
+        )
     }
-    fn shared_key(&self, other_public_key: PublicKey) -> SharedKey {
+    pub fn shared_key(&self, other_public_key: PublicKey) -> SharedKey {
         use curve25519_dalek::{edwards::CompressedEdwardsY, scalar::Scalar};
         use hkdf::Hkdf;
         use sha2::{Sha256, Sha512};
@@ -88,7 +115,7 @@ impl ExtentionPrivateKey for PrivateKey {
             .decompress()
             .unwrap();
 
-        let mut scalar = get_hash::<Sha512>(private_key.as_bytes())[..32].to_vec();
+        let mut scalar = get_hash::<Sha512>(private_key.as_bytes())[..Self::SIZE].to_vec();
         scalar[0] &= 248;
         scalar[31] &= 127;
         scalar[31] |= 64;
@@ -100,24 +127,24 @@ impl ExtentionPrivateKey for PrivateKey {
         let shared_secret = (scalar * unpacked_public_key).compress();
 
         let hkdf = Hkdf::<Sha256>::new(None, &shared_secret.to_bytes());
-        let mut shared_key = [0u8; 32];
+        let mut shared_key = [0u8; Self::SIZE];
         hkdf.expand(b"catapult", &mut shared_key).unwrap();
 
         SharedKey(shared_key)
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SharedKey(pub [u8; 32]);
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub struct SharedKey(pub [u8; Self::SIZE]);
 
 impl SharedKey {
+    pub const SIZE: usize = PublicKey::SIZE;
     #[inline]
-    pub fn to_bytes(&self) -> [u8; 32] {
+    pub fn to_bytes(&self) -> [u8; Self::SIZE] {
         self.0
     }
-
     #[inline]
-    pub fn as_bytes(&self) -> &[u8; 32] {
+    pub fn as_bytes(&self) -> &[u8; Self::SIZE] {
         &self.0
     }
 }

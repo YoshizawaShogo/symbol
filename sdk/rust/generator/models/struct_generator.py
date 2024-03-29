@@ -103,6 +103,7 @@ def generate_struct(astmodel):
             else:
                 ret += f'size += self.{f.name}.size();'
         elif type(f.field_type) == catparser.ast.Array:
+            fn = f.name
             ft = f.field_type
             fte = ft.element_type
             alignment = ft.alignment
@@ -114,10 +115,19 @@ def generate_struct(astmodel):
                 else:
                     raise "unexpected"
             else:
-                if ft.is_expandable or type(fte) == str:
-                    ret += f'size += (self.{f.name}.iter().map(|x| x.size()).sum::<usize>() + {alignment-1}) & !{alignment-1};'
+                if ft.is_last_element_padded:
+                    ret += f'size += (self.{fn}.iter().map(|x| x.size()).sum::<usize>() + {alignment-1}) & !{alignment-1};'
                 else:
-                    raise "unexpected"
+                    ret += f'''
+                        for i in 0..self.{fn}.len() {{
+                            let x = &self.{fn}[i];
+                            if i+1 == self.{fn}.len() {{
+                                size += x.size();
+                                break;
+                            }}
+                            size += (x.size() + {alignment-1}) & !{alignment-1};
+                        }}
+                    '''
         elif type(f.size) == int:
             ret += f'size += {f.size};'
         else:
@@ -178,6 +188,8 @@ def generate_struct(astmodel):
                 ret += f'(element, payload) = {fte}::deserialize(payload)?;'
                 ret += f'{fn}.push(element);'
                 if alignment is not None:
+                    if not ft.is_last_element_padded:
+                        ret += 'if payload.len() == 0 {break};'
                     ret += f'payload = &payload[(({alignment} - (tmp_payload_len - payload.len()) % {alignment}) % {alignment})..];'
             else:
                 raise "unexpected"
@@ -247,14 +259,27 @@ def generate_struct(astmodel):
                     ret += f'let {fn}: Vec<u8> = self.{fn}.iter().flat_map(|x| x.serialize()).collect();'
             else:
                 if ft.is_expandable or type(fte) == str:
-                    ret += f'''
-                        let mut {fn} = Vec::new();
-                        for x in &self.{fn} {{
-                            {fn}.extend_from_slice(&x.serialize());
-                            let len = {fn}.len();
-                            {fn}.resize((len + {alignment-1}) & !{alignment-1}, 0);
-                        }}
-                    '''
+                    if not ft.is_last_element_padded:
+                        ret += f'''
+                            let mut {fn} = Vec::new();
+                            let {fn}_len = self.{fn}.len();
+                            for i in 0..{fn}_len {{
+                                let x = &self.{fn}[i];
+                                {fn}.extend_from_slice(&x.serialize());
+                                if {fn}_len == i+1 {{ break; }}
+                                let len = {fn}.len();
+                                {fn}.resize((len + {alignment-1}) & !{alignment-1}, 0);
+                            }}
+                        '''
+                    else:
+                        ret += f'''
+                            let mut {fn} = Vec::new();
+                            for x in &self.{fn} {{
+                                {fn}.extend_from_slice(&x.serialize());
+                                let len = {fn}.len();
+                                {fn}.resize((len + {alignment-1}) & !{alignment-1}, 0);
+                            }}
+                        '''
                 else:
                     raise "unexpected"
         elif type(ft) == catparser.ast.FixedSizeInteger:

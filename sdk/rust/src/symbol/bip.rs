@@ -36,7 +36,6 @@ impl Bip32Node {
 
         for i in 0..4 {
             child_data[child_data_len - 1 - i] |= (identifier >> (8 * i)) as u8;
-            // & 0xFF
         }
 
         for i in 0..PrivateKey::SIZE {

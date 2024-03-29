@@ -1,5 +1,6 @@
 use crate::symbol::key::*;
 use crate::symbol::models::*;
+use crate::symbol::signature::*;
 
 pub trait KeyGenerator {
     fn generate(&mut self) -> PrivateKey;

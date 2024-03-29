@@ -43,10 +43,6 @@ def generate_files(astmodels, output_directory: Path):
         factory_types = util.get_factory_types(astmodels)
 
         for astmodel in astmodels:
-            if astmodel.name in ('Signature', 'PublicKey', 'VotingPublicKey'): 
-                # See src/symbol/models_header.rs
-                continue
-            
             astmodel = copy.deepcopy(astmodel)
             output += util.header_for_each_astmodel(astmodel)
             if astmodel.name in factory_types:

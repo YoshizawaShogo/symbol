@@ -693,6 +693,125 @@ impl Hash512 {
     }
 }
 
+///A 32-byte (256 bit) integer derived from a private key.
+///It serves as the public identifier of the [key pair](/concepts/cryptography.html#key-pair) and can be disseminated widely. It is used to prove that an entity was signed with the paired private key.
+//name: PublicKey
+//linked_type: <class 'catparser.ast.FixedSizeBuffer'>
+//    size: 32
+//    is_unsigned: True
+//    display_type: DisplayType.BYTE_ARRAY
+//    *name: binary_fixed(32)
+//*is_unsigned: True
+//*size: 32
+#[derive(Debug, Clone, PartialEq, Eq)]
+
+// generated from generate_bytearray()
+pub struct PublicKey(pub [u8; 32]);
+impl PublicKey {
+    pub const SIZE: usize = 32;
+    pub fn new(publickey: [u8; 32]) -> Self {
+        Self(publickey)
+    }
+    pub fn default() -> Self {
+        Self([0; 32])
+    }
+    pub fn size(&self) -> usize {
+        Self::SIZE
+    }
+    pub fn deserialize(payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        if payload.len() < Self::SIZE {
+            return Err(SymbolError::SizeError {
+                expect: vec![Self::SIZE],
+                real: payload.len(),
+            });
+        }
+        let (bytes, rest) = payload.split_at(Self::SIZE);
+        Ok((Self(bytes.try_into()?), rest))
+    }
+    pub fn serialize(&self) -> Vec<u8> {
+        self.0.to_vec()
+    }
+}
+
+///A PublicKey used for voting during the [finalization process](/concepts/block.html#finalization).
+//name: VotingPublicKey
+//linked_type: <class 'catparser.ast.FixedSizeBuffer'>
+//    size: 32
+//    is_unsigned: True
+//    display_type: DisplayType.BYTE_ARRAY
+//    *name: binary_fixed(32)
+//*is_unsigned: True
+//*size: 32
+#[derive(Debug, Clone, PartialEq, Eq)]
+
+// generated from generate_bytearray()
+pub struct VotingPublicKey(pub [u8; 32]);
+impl VotingPublicKey {
+    pub const SIZE: usize = 32;
+    pub fn new(votingpublickey: [u8; 32]) -> Self {
+        Self(votingpublickey)
+    }
+    pub fn default() -> Self {
+        Self([0; 32])
+    }
+    pub fn size(&self) -> usize {
+        Self::SIZE
+    }
+    pub fn deserialize(payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        if payload.len() < Self::SIZE {
+            return Err(SymbolError::SizeError {
+                expect: vec![Self::SIZE],
+                real: payload.len(),
+            });
+        }
+        let (bytes, rest) = payload.split_at(Self::SIZE);
+        Ok((Self(bytes.try_into()?), rest))
+    }
+    pub fn serialize(&self) -> Vec<u8> {
+        self.0.to_vec()
+    }
+}
+
+///A 64-byte (512 bit) array certifying that the signed data has not been modified.
+///Symbol currently uses [Ed25519](https://ed25519.cr.yp.to/) signatures.
+//name: Signature
+//linked_type: <class 'catparser.ast.FixedSizeBuffer'>
+//    size: 64
+//    is_unsigned: True
+//    display_type: DisplayType.BYTE_ARRAY
+//    *name: binary_fixed(64)
+//*is_unsigned: True
+//*size: 64
+#[derive(Debug, Clone, PartialEq, Eq)]
+
+// generated from generate_bytearray()
+pub struct Signature(pub [u8; 64]);
+impl Signature {
+    pub const SIZE: usize = 64;
+    pub fn new(signature: [u8; 64]) -> Self {
+        Self(signature)
+    }
+    pub fn default() -> Self {
+        Self([0; 64])
+    }
+    pub fn size(&self) -> usize {
+        Self::SIZE
+    }
+    pub fn deserialize(payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
+        if payload.len() < Self::SIZE {
+            return Err(SymbolError::SizeError {
+                expect: vec![Self::SIZE],
+                real: payload.len(),
+            });
+        }
+        let (bytes, rest) = payload.split_at(Self::SIZE);
+        Ok((Self(bytes.try_into()?), rest))
+    }
+    pub fn serialize(&self) -> Vec<u8> {
+        self.0.to_vec()
+    }
+}
+
 ///A quantity of a certain mosaic.
 //name: Mosaic
 //disposition: None
@@ -3667,7 +3786,14 @@ impl NemesisBlockV1 {
         size += 8;
         size += self.total_voting_balance.size();
         size += self.previous_importance_block_hash.size();
-        size += (self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7;
+        for i in 0..self.transactions.len() {
+            let x = &self.transactions[i];
+            if i + 1 == self.transactions.len() {
+                size += x.size();
+                break;
+            }
+            size += (x.size() + 7) & !7;
+        }
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
@@ -3746,6 +3872,9 @@ impl NemesisBlockV1 {
             let element;
             (element, payload) = Transaction::deserialize(payload)?;
             transactions.push(element);
+            if payload.len() == 0 {
+                break;
+            };
             payload = &payload[((8 - (tmp_payload_len - payload.len()) % 8) % 8)..];
         }
         let self_ = Self {
@@ -3795,8 +3924,13 @@ impl NemesisBlockV1 {
         let total_voting_balance = self.total_voting_balance.serialize();
         let previous_importance_block_hash = self.previous_importance_block_hash.serialize();
         let mut transactions = Vec::new();
-        for x in &self.transactions {
+        let transactions_len = self.transactions.len();
+        for i in 0..transactions_len {
+            let x = &self.transactions[i];
             transactions.extend_from_slice(&x.serialize());
+            if transactions_len == i + 1 {
+                break;
+            }
             let len = transactions.len();
             transactions.resize((len + 7) & !7, 0);
         }
@@ -4310,7 +4444,14 @@ impl NormalBlockV1 {
         size += self.beneficiary_address.size();
         size += self.fee_multiplier.size();
         size += 4;
-        size += (self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7;
+        for i in 0..self.transactions.len() {
+            let x = &self.transactions[i];
+            if i + 1 == self.transactions.len() {
+                size += x.size();
+                break;
+            }
+            size += (x.size() + 7) & !7;
+        }
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
@@ -4388,6 +4529,9 @@ impl NormalBlockV1 {
             let element;
             (element, payload) = Transaction::deserialize(payload)?;
             transactions.push(element);
+            if payload.len() == 0 {
+                break;
+            };
             payload = &payload[((8 - (tmp_payload_len - payload.len()) % 8) % 8)..];
         }
         let self_ = Self {
@@ -4429,8 +4573,13 @@ impl NormalBlockV1 {
         let fee_multiplier = self.fee_multiplier.serialize();
         let block_header_reserved_1 = 0u32.to_le_bytes();
         let mut transactions = Vec::new();
-        for x in &self.transactions {
+        let transactions_len = self.transactions.len();
+        for i in 0..transactions_len {
+            let x = &self.transactions[i];
             transactions.extend_from_slice(&x.serialize());
+            if transactions_len == i + 1 {
+                break;
+            }
             let len = transactions.len();
             transactions.resize((len + 7) & !7, 0);
         }
@@ -5002,7 +5151,14 @@ impl ImportanceBlockV1 {
         size += 8;
         size += self.total_voting_balance.size();
         size += self.previous_importance_block_hash.size();
-        size += (self.transactions.iter().map(|x| x.size()).sum::<usize>() + 7) & !7;
+        for i in 0..self.transactions.len() {
+            let x = &self.transactions[i];
+            if i + 1 == self.transactions.len() {
+                size += x.size();
+                break;
+            }
+            size += (x.size() + 7) & !7;
+        }
         size
     }
     pub fn deserialize(mut payload: &[u8]) -> Result<(Self, &[u8]), SymbolError> {
@@ -5081,6 +5237,9 @@ impl ImportanceBlockV1 {
             let element;
             (element, payload) = Transaction::deserialize(payload)?;
             transactions.push(element);
+            if payload.len() == 0 {
+                break;
+            };
             payload = &payload[((8 - (tmp_payload_len - payload.len()) % 8) % 8)..];
         }
         let self_ = Self {
@@ -5130,8 +5289,13 @@ impl ImportanceBlockV1 {
         let total_voting_balance = self.total_voting_balance.serialize();
         let previous_importance_block_hash = self.previous_importance_block_hash.serialize();
         let mut transactions = Vec::new();
-        for x in &self.transactions {
+        let transactions_len = self.transactions.len();
+        for i in 0..transactions_len {
+            let x = &self.transactions[i];
             transactions.extend_from_slice(&x.serialize());
+            if transactions_len == i + 1 {
+                break;
+            }
             let len = transactions.len();
             transactions.resize((len + 7) & !7, 0);
         }

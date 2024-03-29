@@ -4,4 +4,5 @@ pub use crate::symbol::cipher::*;
 pub use crate::symbol::hash256::*;
 pub use crate::symbol::key::*;
 pub use crate::symbol::models::*;
+pub use crate::symbol::signature::*;
 pub use crate::symbol::voting_keys_generator::*;

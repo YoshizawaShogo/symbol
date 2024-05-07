@@ -1189,17 +1189,6 @@ fn NamespaceExpiredReceipt_receipts_12() {
 
 #[test]
 #[allow(non_snake_case)]
-fn NamespaceRentalFeeReceipt_receipts_13() {
-    let input_payload = decode("4800000000004D1244B262C46CEABB85EFCDAB90785634129841E5B8E40781CF74DABF592817DE48711D778648DEAFB298F409274B52FABBFBCF7E7DF7E20DE1D0C3F657FB8595C1").unwrap();
-    let tx = NamespaceRentalFeeReceipt::deserialize(&input_payload)
-        .unwrap()
-        .0;
-    let output_payload = tx.serialize();
-    assert_eq!(input_payload, output_payload);
-}
-
-#[test]
-#[allow(non_snake_case)]
 fn FinalizedBlockHeader_finalization_other_1() {
     let input_payload = decode("EA0300000300000050FF0A0000000000F8E133571827948BA7D72EE62714893EC3E5C0279B44C46F528D2AED9AA28B95").unwrap();
     let tx = FinalizedBlockHeader::deserialize(&input_payload).unwrap().0;

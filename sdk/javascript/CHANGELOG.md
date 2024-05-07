@@ -5,6 +5,33 @@ The changelog format is based on [Keep a Changelog](https://keepachangelog.com/e
 
 ## next
 
+## [3.2.1] - 22-Apr-2024
+
+### Fixed
+- now() does not return the correct timestamp since bitwise OR operation only works with signed 32-bit integers
+- package subpath exports are not working correctly with certain JS/TS environments
+
+## [3.2.0] - 09-Apr-2024
+
+### Added
+- add now() to facade for getting current timestamp
+- add alternative pure JavaScript implementation for all WASM logic
+- add static getter that can be used instead of constructor in TS
+- use exports in package.json
+
+### Changed
+- split single entry point into default, nem and symbol for better discoverability
+- make symbol-crypto-wasm-node an optional dependency
+
+### Fixed
+- improve codegen to significantly reduce size of generated models
+- use globalThis instead of global for WebAssembly for browser compatibility
+- mm-snap requires default export to be last
+- update Cipher.js to support ReactNative environment
+- update rust code to use dalek 4
+- prune customized tweetnacl implementation
+- search through nc module to find transaction class name to workaround minification dropping 'constructor.name'
+
 ## [3.1.0] - 7-Aug-2023
 
 ### Changed
@@ -59,6 +86,8 @@ The changelog format is based on [Keep a Changelog](https://keepachangelog.com/e
 ### Changed
  - complete SDK rewrite, see details in [readme](README.md)
 
+[3.2.1]: https://github.com/symbol/symbol/compare/sdk%2Fjavascript%2Fv3.2.0...sdk%2Fjavascript%2Fv3.2.1
+[3.2.0]: https://github.com/symbol/symbol/compare/sdk%2Fjavascript%2Fv3.1.0...sdk%2Fjavascript%2Fv3.2.0
 [3.1.0]: https://github.com/symbol/symbol/compare/sdk%2Fjavascript%2Fv3.0.11...sdk%2Fjavascript%2Fv3.1.0
 [3.0.11]: https://github.com/symbol/symbol/compare/sdk%2Fjavascript%2Fv3.0.7...sdk%2Fjavascript%2Fv3.0.11
 [3.0.7]: https://github.com/symbol/symbol/compare/sdk%2Fjavascript%2Fv3.0.0...sdk%2Fjavascript%2Fv3.0.7
